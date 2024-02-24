@@ -4,7 +4,6 @@ import Header from "./Components/Layout/Header"
 function App() {
   return (
     <div className="App">
-      <h1>App</h1>
       <BrowserRouter>
         <Header />
         <Routes>
