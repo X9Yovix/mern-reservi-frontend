@@ -1,7 +1,7 @@
 stages:
+  - cleanup
   - build
   - check
-  - cleanup
   - deploy
 
 .global-rules:
