@@ -1,13 +1,21 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button, Form, Input, Spin, message } from "antd"
 import { EyeInvisibleOutlined, EyeTwoTone, LoginOutlined, MailOutlined } from "@ant-design/icons"
-
-import "./Signin.css"
+import { useNavigate } from "react-router-dom"
 import axios from "../../../axios"
+import "./Signin.css"
 
 const Signin = () => {
   const [loading, setLoading] = useState(false)
   const [alertMessage, contextHolder] = message.useMessage()
+
+  const navigate = useNavigate()
+  const isAuthenticated = localStorage.getItem("token")
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard")
+  }, [])
+
   const handleSubmit = async (values) => {
     try {
       setLoading(true)
@@ -20,6 +28,8 @@ const Signin = () => {
             type: "success",
             content: res.data.message
           })
+          localStorage.setItem("token", res.data.token)
+          navigate("/dashboard")
         })
         .catch((err) => {
           console.log(err)

@@ -1,10 +1,20 @@
 import { Link } from "react-router-dom"
 import { Menu } from "antd"
-import { HomeOutlined, LoginOutlined, PlusCircleOutlined } from "@ant-design/icons"
+import {
+  DashboardOutlined,
+  HomeOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  PlusCircleOutlined
+} from "@ant-design/icons"
 import { useState } from "react"
-import axios from "../../axios"
 
 const items = [
+  {
+    label: <Link to="/dashboard">Dashboard</Link>,
+    key: "dashboard",
+    icon: <DashboardOutlined />
+  },
   {
     label: <Link to="/">Home</Link>,
     key: "home",
@@ -19,27 +29,34 @@ const items = [
     label: <Link to="/register">Sign Up</Link>,
     key: "register",
     icon: <PlusCircleOutlined />
+  },
+  {
+    label: <Link to="/logout">Logout</Link>,
+    key: "logout",
+    icon: <LogoutOutlined />
   }
 ]
 
 const Header = () => {
-  const [current, setCurrent] = useState("home")
+  const [current, setCurrent] = useState()
+
+  const isAuthenticated = localStorage.getItem("token")
+  const filteredItems = isAuthenticated
+    ? items.filter((item) => ["dashboard", "home", "logout"].includes(item.key))
+    : items.filter((item) => ["home", "login", "register"].includes(item.key))
 
   const onClick = (e) => {
     setCurrent(e.key)
-    axios
-      .get(`/users`)
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
   }
 
   return (
     <>
-      <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+      <Menu
+        onClick={onClick}
+        selectedKeys={[current ? current : filteredItems[0].key]}
+        mode="horizontal"
+        items={filteredItems}
+      />
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, Spin, message } from "antd"
 import {
   AimOutlined,
@@ -9,12 +9,20 @@ import {
   PhoneOutlined,
   UserAddOutlined
 } from "@ant-design/icons"
-import "./Signup.css"
+import { useNavigate } from "react-router-dom"
 import axios from "../../../axios"
+import "./Signup.css"
 
 const Signup = () => {
   const [loading, setLoading] = useState(false)
   const [alertMessage, contextHolder] = message.useMessage()
+
+  const navigate = useNavigate()
+  const isAuthenticated = localStorage.getItem("token")
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard")
+  }, [])
 
   const handleSubmit = async (values) => {
     try {
@@ -28,6 +36,7 @@ const Signup = () => {
             type: "success",
             content: res.data.message
           })
+          navigate("/login")
         })
         .catch((err) => {
           console.log(err)
@@ -159,7 +168,12 @@ const Signup = () => {
     )
   }
 
-  return <>{contextHolder}{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+  return (
+    <>
+      {contextHolder}
+      {loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}
+    </>
+  )
 }
 
 export default Signup
