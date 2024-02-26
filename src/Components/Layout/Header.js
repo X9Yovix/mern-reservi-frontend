@@ -11,7 +11,7 @@ const items = [
     icon: <HomeOutlined />
   },
   {
-    label: <Link to="/login">Sign Ip</Link>,
+    label: <Link to="/login">Sign In</Link>,
     key: "login",
     icon: <LoginOutlined />
   },
