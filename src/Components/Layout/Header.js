@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Menu } from "antd"
 import {
   DashboardOutlined,
@@ -9,36 +9,47 @@ import {
 } from "@ant-design/icons"
 import { useState } from "react"
 
-const items = [
-  {
-    label: <Link to="/dashboard">Dashboard</Link>,
-    key: "dashboard",
-    icon: <DashboardOutlined />
-  },
-  {
-    label: <Link to="/">Home</Link>,
-    key: "home",
-    icon: <HomeOutlined />
-  },
-  {
-    label: <Link to="/login">Sign In</Link>,
-    key: "login",
-    icon: <LoginOutlined />
-  },
-  {
-    label: <Link to="/register">Sign Up</Link>,
-    key: "register",
-    icon: <PlusCircleOutlined />
-  },
-  {
-    label: <Link to="/logout">Logout</Link>,
-    key: "logout",
-    icon: <LogoutOutlined />
-  }
-]
-
 const Header = () => {
   const [current, setCurrent] = useState()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    navigate("/")
+  }
+
+  const items = [
+    {
+      label: <Link to="/dashboard">Dashboard</Link>,
+      key: "dashboard",
+      icon: <DashboardOutlined />
+    },
+    {
+      label: <Link to="/">Home</Link>,
+      key: "home",
+      icon: <HomeOutlined />
+    },
+    {
+      label: <Link to="/login">Sign In</Link>,
+      key: "login",
+      icon: <LoginOutlined />
+    },
+    {
+      label: <Link to="/register">Sign Up</Link>,
+      key: "register",
+      icon: <PlusCircleOutlined />
+    },
+    {
+      label: (
+        <Link to="/home" onClick={handleLogout}>
+          Logout
+        </Link>
+      ),
+      key: "logout",
+      icon: <LogoutOutlined />
+    }
+  ]
 
   const isAuthenticated = localStorage.getItem("token")
   const filteredItems = isAuthenticated
