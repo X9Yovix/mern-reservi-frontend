@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, DatePicker, Form, Input, Spin } from "antd"
+import { Button, DatePicker, Form, Input, Spin, message } from "antd"
 import {
   AimOutlined,
   EyeInvisibleOutlined,
@@ -14,6 +14,7 @@ import axios from "../../../axios"
 
 const Signup = () => {
   const [loading, setLoading] = useState(false)
+  const [alertMessage, contextHolder] = message.useMessage()
 
   const handleSubmit = async (values) => {
     try {
@@ -23,10 +24,25 @@ const Signup = () => {
         .then((res) => {
           console.log(res)
           setLoading(false)
+          alertMessage.open({
+            type: "success",
+            content: res.data.message
+          })
         })
         .catch((err) => {
           console.log(err)
           setLoading(false)
+          if (err.response.status == 400) {
+            alertMessage.open({
+              type: "error",
+              content: err.response.data.error
+            })
+            return
+          }
+          alertMessage.open({
+            type: "error",
+            content: err.message
+          })
         })
     } catch (error) {
       console.error("Error occurred while registering user:", error)
@@ -143,7 +159,7 @@ const Signup = () => {
     )
   }
 
-  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+  return <>{contextHolder}{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
 }
 
 export default Signup
