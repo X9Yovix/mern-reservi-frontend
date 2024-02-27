@@ -26,7 +26,8 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => {
     console.log(getToken())
-    return response
+    return Promise.resolve(response)
+    //return response
   },
   (error) => {
     if (error.response) {
@@ -38,11 +39,11 @@ instance.interceptors.response.use(
         message.error(error.response.data.error)
         localStorage.removeItem("token")
       }
-      //return Promise.reject(error);
-      return error
+      return Promise.reject(error)
+      //return error
     }
-    return error
-    //return Promise.reject(error);
+    //return error
+    return Promise.reject(error)
   }
 )
 

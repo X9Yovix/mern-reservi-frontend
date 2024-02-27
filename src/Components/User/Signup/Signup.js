@@ -15,7 +15,6 @@ import "./Signup.css"
 
 const Signup = () => {
   const [loading, setLoading] = useState(false)
-  const [alertMessage, contextHolder] = message.useMessage()
 
   const navigate = useNavigate()
   const isAuthenticated = localStorage.getItem("token")
@@ -32,26 +31,17 @@ const Signup = () => {
         .then((res) => {
           console.log(res)
           setLoading(false)
-          alertMessage.open({
-            type: "success",
-            content: res.data.message
-          })
+          message.success(res.data.message)
           navigate("/login")
         })
         .catch((err) => {
           console.log(err)
           setLoading(false)
-          if (err.response.status == 400) {
-            alertMessage.open({
-              type: "error",
-              content: err.response.data.error
-            })
+          if (err.response.status === 400) {
+            message.error(err.response.data.error)
             return
           }
-          alertMessage.open({
-            type: "error",
-            content: err.message
-          })
+          message.error(err.message)
         })
     } catch (error) {
       console.error("Error occurred while registering user:", error)
@@ -168,12 +158,7 @@ const Signup = () => {
     )
   }
 
-  return (
-    <>
-      {contextHolder}
-      {loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}
-    </>
-  )
+  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
 }
 
 export default Signup

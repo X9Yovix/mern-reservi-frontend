@@ -6,6 +6,8 @@ import Signin from "./Components/User/Signin/Signin"
 import Dashboard from "./Components/Dashboard/Dashboard"
 import PrivateComponent from "./Components/Utils/PrivateComponent"
 import Home from "./Components/Shared/Home"
+import ResetPassword from "./Components/User/ResetPassword/ResetPassword"
+import ResetPasswordVerify from "./Components/User/ResetPasswordVerify/ResetPasswordVerify"
 
 function App() {
   return (
@@ -17,7 +19,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Signin />} />
           <Route path="/register" element={<Signup />} />
-
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordVerify />} />
           <Route element={<PrivateComponent />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
-import { Button, Form, Input, Spin, Typography, message } from "antd"
-import { EyeInvisibleOutlined, EyeTwoTone, LoginOutlined, MailOutlined } from "@ant-design/icons"
+import { Button, Form, Input, Spin, message } from "antd"
+import { MailOutlined, ReloadOutlined } from "@ant-design/icons"
 import { useNavigate } from "react-router-dom"
 import axios from "../../../axios"
-import "./Signin.css"
+import "./ResetPassword.css"
 
-const Signin = () => {
+const ResetPassword = () => {
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
@@ -19,14 +19,11 @@ const Signin = () => {
     try {
       setLoading(true)
       await axios
-        .post("/auths/login", values)
+        .post("/auths/reset-password/request", values)
         .then((res) => {
           console.log(res)
           setLoading(false)
           message.success(res.data.message)
-          localStorage.setItem("token", res.data.token)
-          localStorage.setItem("user", JSON.stringify(res.data.user))
-          navigate("/dashboard")
         })
         .catch((err) => {
           console.log(err)
@@ -65,29 +62,9 @@ const Signin = () => {
         >
           <Input suffix={<MailOutlined />} />
         </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Enter your password"
-            }
-          ]}
-        >
-          <Input.Password
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
-        </Form.Item>
-        <Typography.Link
-          style={{ display: "flex", justifyContent: "flex-end", marginRight: 50 }}
-          href="/reset-password"
-        >
-          Forgot password?
-        </Typography.Link>
-        <Form.Item wrapperCol={{ offset: 10, span: 16 }} style={{ marginTop: 40 }}>
-          <Button type="primary" htmlType="submit" icon={<LoginOutlined />}>
-            Login
+        <Form.Item wrapperCol={{ offset: 12, span: 16 }}>
+          <Button type="primary" htmlType="submit" icon={<ReloadOutlined />}>
+            Reset Password
           </Button>
         </Form.Item>
       </Form>
@@ -97,4 +74,4 @@ const Signin = () => {
   return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
 }
 
-export default Signin
+export default ResetPassword
