@@ -12,7 +12,9 @@ const ResetPassword = () => {
   const isAuthenticated = localStorage.getItem("token")
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/dashboard")
+    if (isAuthenticated) {
+      navigate("/dashboard")
+    }
   }, [])
 
   const handleSubmit = async (values) => {
@@ -62,7 +64,7 @@ const ResetPassword = () => {
         >
           <Input suffix={<MailOutlined />} />
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 12, span: 16 }}>
+        <Form.Item wrapperCol={{ offset: 14, span: 16 }}>
           <Button type="primary" htmlType="submit" icon={<ReloadOutlined />}>
             Reset Password
           </Button>

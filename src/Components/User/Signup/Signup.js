@@ -20,7 +20,9 @@ const Signup = () => {
   const isAuthenticated = localStorage.getItem("token")
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/dashboard")
+    if (isAuthenticated) {
+      navigate("/dashboard")
+    }
   }, [])
 
   const handleSubmit = async (values) => {

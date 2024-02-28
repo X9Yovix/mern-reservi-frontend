@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Menu } from "antd"
+import { Menu, message } from "antd"
 import {
   DashboardOutlined,
   HomeOutlined,
@@ -16,6 +16,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
+    message.success("Logged out successfully")
     navigate("/")
   }
 
