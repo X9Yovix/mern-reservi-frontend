@@ -68,7 +68,7 @@ const ResetPasswordVerify = () => {
         </Form.Item>
         <Form.Item
           label="Confirm Password"
-          name="confirmPassword"
+          name="confirm_password"
           dependencies={["password"]}
           hasFeedback
           rules={[
