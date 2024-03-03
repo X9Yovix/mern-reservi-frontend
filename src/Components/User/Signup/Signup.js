@@ -19,6 +19,9 @@ const Signup = () => {
   const navigate = useNavigate()
   const isAuthenticated = localStorage.getItem("token")
 
+  const currentDate = new Date()
+  const requiredDate = new Date(currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate())
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard")
@@ -71,7 +74,10 @@ const Signup = () => {
             }
           ]}
         >
-          <Input suffix={<InfoCircleOutlined />} />
+          <Input
+            placeholder="Enter your first name: ex: Test1"
+            suffix={<InfoCircleOutlined />}
+          />
         </Form.Item>
         <Form.Item
           label="Last Name"
@@ -83,7 +89,10 @@ const Signup = () => {
             }
           ]}
         >
-          <Input suffix={<InfoCircleOutlined />} />
+          <Input
+            placeholder="Enter your last name ex: Test2"
+            suffix={<InfoCircleOutlined />}
+          />
         </Form.Item>
         <Form.Item
           label="Email"
@@ -95,7 +104,10 @@ const Signup = () => {
             }
           ]}
         >
-          <Input suffix={<MailOutlined />} />
+          <Input
+            placeholder="Enter your email ex: example@test.com"
+            suffix={<MailOutlined />}
+          />
         </Form.Item>
         <Form.Item
           label="Password"
@@ -108,36 +120,13 @@ const Signup = () => {
           ]}
         >
           <Input.Password
+            placeholder="Enter your password"
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
           />
         </Form.Item>
         <Form.Item
-          label="Address"
-          name="address"
-          rules={[
-            {
-              required: false,
-              message: "Enter your address (optional)"
-            }
-          ]}
-        >
-          <Input suffix={<AimOutlined />} />
-        </Form.Item>
-        <Form.Item
-          label="Phone Number"
-          name="phone_number"
-          rules={[
-            {
-              required: false,
-              message: "Enter your phone number (optional)"
-            }
-          ]}
-        >
-          <Input suffix={<PhoneOutlined />} />
-        </Form.Item>
-        <Form.Item
           label="Birth Date"
-          name="birth_date"
+          name="birthday"
           rules={[
             {
               required: true,
@@ -149,6 +138,39 @@ const Signup = () => {
             style={{
               width: "100%"
             }}
+            showNow={false}
+            format={"YYYY-MM-DD"}
+            disabledDate={(current) => current && current > requiredDate}
+            placeholder="Select your birthdate"
+          />
+        </Form.Item>
+        <Form.Item
+          label="Address"
+          name="address"
+          rules={[
+            {
+              required: false
+            }
+          ]}
+        >
+          <Input
+            placeholder="Enter your address (optional)"
+            suffix={<AimOutlined />}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Phone Number"
+          name="phone"
+          rules={[
+            {
+              required: false,
+              message: "Enter your phone number (optional)"
+            }
+          ]}
+        >
+          <Input
+            placeholder="Enter your phone number (optional)"
+            suffix={<PhoneOutlined />}
           />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 12, span: 16 }}>
