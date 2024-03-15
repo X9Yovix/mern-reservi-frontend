@@ -25,13 +25,11 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
-    console.log(getToken())
     return Promise.resolve(response)
     //return response
   },
   (error) => {
     if (error.response) {
-      console.log(getToken())
       if (error.response.status === 401) {
         message.error(error.response.data.error)
       }

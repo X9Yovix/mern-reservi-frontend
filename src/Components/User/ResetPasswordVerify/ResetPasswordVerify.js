@@ -62,9 +62,7 @@ const ResetPasswordVerify = () => {
             }
           ]}
         >
-          <Input.Password
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
+          <Input.Password iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
         </Form.Item>
         <Form.Item
           label="Confirm Password"
@@ -86,9 +84,7 @@ const ResetPasswordVerify = () => {
             })
           ]}
         >
-          <Input.Password
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
+          <Input.Password iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
           <Button type="primary" htmlType="submit" icon={<SyncOutlined />}>

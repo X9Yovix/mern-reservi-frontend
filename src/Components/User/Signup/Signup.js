@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, Spin, message } from "antd"
-import {
-  AimOutlined,
-  EyeInvisibleOutlined,
-  EyeTwoTone,
-  InfoCircleOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  UserAddOutlined
-} from "@ant-design/icons"
+import { AimOutlined, EyeInvisibleOutlined, EyeTwoTone, InfoCircleOutlined, MailOutlined, PhoneOutlined, UserAddOutlined } from "@ant-design/icons"
 import { useNavigate } from "react-router-dom"
 import axios from "../../../axios"
 import "./Signup.css"
@@ -74,10 +66,7 @@ const Signup = () => {
             }
           ]}
         >
-          <Input
-            placeholder="Enter your first name: ex: Test1"
-            suffix={<InfoCircleOutlined />}
-          />
+          <Input placeholder="Enter your first name: ex: Test1" suffix={<InfoCircleOutlined />} />
         </Form.Item>
         <Form.Item
           label="Last Name"
@@ -89,10 +78,7 @@ const Signup = () => {
             }
           ]}
         >
-          <Input
-            placeholder="Enter your last name ex: Test2"
-            suffix={<InfoCircleOutlined />}
-          />
+          <Input placeholder="Enter your last name ex: Test2" suffix={<InfoCircleOutlined />} />
         </Form.Item>
         <Form.Item
           label="Email"
@@ -104,10 +90,7 @@ const Signup = () => {
             }
           ]}
         >
-          <Input
-            placeholder="Enter your email ex: example@test.com"
-            suffix={<MailOutlined />}
-          />
+          <Input placeholder="Enter your email ex: example@test.com" suffix={<MailOutlined />} />
         </Form.Item>
         <Form.Item
           label="Password"
@@ -119,10 +102,7 @@ const Signup = () => {
             }
           ]}
         >
-          <Input.Password
-            placeholder="Enter your password"
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
+          <Input.Password placeholder="Enter your password" iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
         </Form.Item>
         <Form.Item
           label="Birth Date"
@@ -153,10 +133,7 @@ const Signup = () => {
             }
           ]}
         >
-          <Input
-            placeholder="Enter your address (optional)"
-            suffix={<AimOutlined />}
-          />
+          <Input placeholder="Enter your address (optional)" suffix={<AimOutlined />} />
         </Form.Item>
         <Form.Item
           label="Phone Number"
@@ -168,10 +145,7 @@ const Signup = () => {
             }
           ]}
         >
-          <Input
-            placeholder="Enter your phone number (optional)"
-            suffix={<PhoneOutlined />}
-          />
+          <Input placeholder="Enter your phone number (optional)" suffix={<PhoneOutlined />} />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 12, span: 16 }}>
           <Button type="primary" htmlType="submit" icon={<UserAddOutlined />}>

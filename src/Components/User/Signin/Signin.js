@@ -77,14 +77,9 @@ const Signin = () => {
             }
           ]}
         >
-          <Input.Password
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
+          <Input.Password iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
         </Form.Item>
-        <Typography.Link
-          style={{ display: "flex", justifyContent: "flex-end", marginRight: 50 }}
-          href="/reset-password"
-        >
+        <Typography.Link style={{ display: "flex", justifyContent: "flex-end", marginRight: 50 }} href="/reset-password">
           Forgot password?
         </Typography.Link>
         <Form.Item wrapperCol={{ offset: 10, span: 16 }} style={{ marginTop: 40 }}>

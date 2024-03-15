@@ -1,12 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import { Menu, message } from "antd"
-import {
-  DashboardOutlined,
-  HomeOutlined,
-  LoginOutlined,
-  LogoutOutlined,
-  PlusCircleOutlined
-} from "@ant-design/icons"
+import { DashboardOutlined, HomeOutlined, LoginOutlined, LogoutOutlined, PlusCircleOutlined } from "@ant-design/icons"
 import { useState } from "react"
 
 const Header = () => {
@@ -63,12 +57,7 @@ const Header = () => {
 
   return (
     <>
-      <Menu
-        onClick={onClick}
-        selectedKeys={[current ? current : filteredItems[0].key]}
-        mode="horizontal"
-        items={filteredItems}
-      />
+      <Menu onClick={onClick} selectedKeys={[current ? current : filteredItems[0].key]} mode="horizontal" items={filteredItems} />
     </>
   )
 }

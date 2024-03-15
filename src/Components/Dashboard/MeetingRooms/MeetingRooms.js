@@ -1,223 +1,363 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
-import { Button, Form, Input, Row, Col } from "antd"
+import { Button, Form, Input, Row, Col, InputNumber, Divider, Space, Modal, Upload, AutoComplete, Spin, message } from "antd"
+import { useEffect, useState } from "react"
+import axios from "../../../axios"
+
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
 
 const MeetingRooms = () => {
   const [form] = Form.useForm()
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewImage, setPreviewImage] = useState("")
+  const [previewTitle, setPreviewTitle] = useState("")
+  const [fileList, setFileList] = useState([])
+  const [materials, setMaterials] = useState([])
+  const [selectedMaterials, setSelectedMaterials] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const fetchMaterials = async () => {
+    try {
+      setLoading(true)
+      await axios
+        .get("/materials")
+        .then((res) => {
+          setMaterials(res.data.materials.filter((materials) => materials.availableQuantity > 0))
+          setLoading(false)
+        })
+        .catch((err) => {
+          console.log(err)
+          setLoading(false)
+        })
+    } catch (error) {
+      console.error("Error occurred while fetching materials:", error)
+    }
   }
 
-  return (
-    <Form
-      form={form}
-      name="register"
-      onFinish={onFinish}
+  useEffect(() => {
+    fetchMaterials()
+    const storedMessage = localStorage.getItem("successMessage")
+    if (storedMessage) {
+      message.success(storedMessage)
+      localStorage.removeItem("successMessage")
+    }
+  }, [])
+
+  const handleCancel = () => setPreviewOpen(false)
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj)
+    }
+    setPreviewImage(file.url || file.preview)
+    setPreviewOpen(true)
+    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf("/") + 1))
+  }
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList)
+  const uploadButton = (
+    <button
       style={{
-        width: "80%",
-        margin: "auto",
-        padding: "20px",
-        border: "1px solid #ccc",
-        borderRadius: "10px",
-        marginTop: "20px"
+        border: 0,
+        background: "none"
       }}
+      type="button"
     >
-      <Form.Item
-        name="email"
-        label="E-mail"
-        rules={[
-          {
-            type: "email",
-            message: "The input is not valid E-mail!"
-          },
-          {
-            required: true,
-            message: "Please input your E-mail!"
-          }
-        ]}
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8
+        }}
       >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        name="email"
-        label="E-mail"
-        rules={[
-          {
-            type: "email",
-            message: "The input is not valid E-mail!"
-          },
-          {
-            required: true,
-            message: "Please input your E-mail!"
-          }
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Row>
-        <Col span={8} >
-          <Form.Item
-            width={"100px"}
-            name="email"
-            label="E-mail"
-            rules={[
-              {
-                type: "email",
-                message: "The input is not valid E-mail!"
-              },
-              {
-                required: true,
-                message: "Please input your E-mail!"
-              }
-            ]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            name="email"
-            label="E-mail"
-            rules={[
-              {
-                type: "email",
-                message: "The input is not valid E-mail!"
-              },
-              {
-                required: true,
-                message: "Please input your E-mail!"
-              }
-            ]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            name="email"
-            label="E-mail"
-            rules={[
-              {
-                type: "email",
-                message: "The input is not valid E-mail!"
-              },
-              {
-                required: true,
-                message: "Please input your E-mail!"
-              }
-            ]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Form.List
-            name="names"
-            rules={[
-              {
-                validator: async (_, names) => {
-                  if (!names || names.length < 2) {
-                    return Promise.reject(new Error('At least 2 materials'));
-                  }
-                },
-              },
-            ]}
-          >
-            {(fields, { add, remove }, { errors }) => (
-              <>
-                {fields.map((field, index) => (
-                  <Form.Item
-                    label={index === 0 ? 'Materials' : ''}
-                    wrapperCol={
-                      index === 0 ?
-                        {
-                          xs: { span: 4, offset: 0 },
-                          sm: { span: 20, offset: 0 },
-                        }
-                        :
-                        {
-                          xs: { span: 24, offset: 0 },
-                          sm: { span: 20, offset: 4 },
-                        }
-                    }
-
-                    labelCol={
-                      index === 0 ?
-                        {
-                          xs: { span: 24 },
-                          sm: { span: 4 },
-                        }
-                        :
-                        {
-                          xs: { span: 24, offset: 0 },
-                          sm: { span: 20, offset: 4 },
-                        }
-                    }
-                    required={false}
-                    key={field.key}
-                  >
-                    <Form.Item
-                      {...field}
-                      validateTrigger={['onChange', 'onBlur']}
-                      rules={[
-                        {
-                          required: true,
-                          whitespace: true,
-                          message: "Please input material's name or delete this field.",
-                        },
-                      ]}
-                      noStyle
-                    >
-                      <Input placeholder="Material name" style={{ width: '60%' }} />
-                    </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        onClick={() => remove(field.name)}
-                      />
-                    ) : null}
-                  </Form.Item>
-                ))}
-                <Form.Item
-                  wrapperCol={
-                    {
-                      xs: { span: 4, offset: 0 },
-                      sm: { span: 10, offset: 7 },
-                    }
-                  }
-
-                  labelCol={
-                    {
-                      xs: { span: 24 },
-                      sm: { span: 4 },
-                    }
-                  }
-                >
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    style={{ width: '60%' }}
-                    icon={<PlusOutlined />}
-                  >
-                    Add Material
-                  </Button>
-                  <Form.ErrorList errors={errors} />
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
-        </Col>
-      </Row>
-      <Form.Item >
-        <Button type="primary" htmlType="submit">
-          Register
-        </Button>
-      </Form.Item>
-    </Form >
+        Upload
+      </div>
+    </button>
   )
+
+  const onFinish = async (values) => {
+    const formData = new FormData()
+    formData.append("name", values.name)
+    formData.append("capacity", values.capacity)
+
+    formData.append("length", values.length)
+    formData.append("width", values.width)
+    formData.append("height", values.height)
+
+    var materialsData = []
+    values.materials.map((material, index) => {
+      materialsData.push({
+        _id: selectedMaterials[index]._id,
+        reservedQuantity: material.quantity
+      })
+    })
+
+    formData.append("materials", JSON.stringify(materialsData))
+
+    fileList.map((file) => {
+      formData.append("images", file.originFileObj)
+    })
+
+    try {
+      setLoading(true)
+      await axios
+        .post("/meeting_rooms", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then((res) => {
+          setLoading(false)
+          localStorage.setItem("successMessage", res.data.message)
+          window.location.reload()
+        })
+        .catch((err) => {
+          console.log(err)
+          setLoading(false)
+        })
+    } catch (error) {
+      console.error("Error occurred while saving meeting room:", error)
+    }
+  }
+
+  const renderForm = () => {
+    return (
+      <Form
+        form={form}
+        name="meeting-room-form"
+        onFinish={onFinish}
+        style={{
+          width: "80%",
+          margin: "auto",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "10px",
+          marginTop: "20px"
+        }}
+      >
+        <Row gutter={24}>
+          <Col span={16}>
+            <Form.Item name="name" label="Name of the room" colon={false} rules={[{ required: true, message: "Please input name" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              name="capacity"
+              label="Capacity of the room"
+              colon={false}
+              rules={[
+                { required: true, message: "Please input capacity" },
+                { type: "number", min: 1, message: "Capacity must be a positive number" }
+              ]}
+            >
+              <InputNumber placeholder="Capacity" />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Divider />
+        <Row>
+          <Col span={24}>
+            <Form.Item label="Dimensions of the room" colon={false} required={true}>
+              <Space.Compact size="middle">
+                <Form.Item
+                  noStyle
+                  style={{ marginBottom: 0 }}
+                  name="length"
+                  rules={[
+                    { required: true, message: "Please input length" },
+                    { type: "number", min: 1, message: "Length must be a positive number" }
+                  ]}
+                >
+                  <InputNumber style={{ width: "50%" }} placeholder="Length" />
+                </Form.Item>
+                <Form.Item
+                  noStyle
+                  style={{ marginBottom: 0 }}
+                  name="width"
+                  rules={[
+                    { required: true, message: "Please input width" },
+                    { type: "number", min: 1, message: "Width must be a positive number" }
+                  ]}
+                >
+                  <InputNumber style={{ width: "50%" }} placeholder="Width" />
+                </Form.Item>
+                <Form.Item
+                  noStyle
+                  style={{ marginBottom: 0 }}
+                  name="height"
+                  rules={[
+                    { required: true, message: "Please input height" },
+                    { type: "number", min: 1, message: "Height must be a positive number" }
+                  ]}
+                >
+                  <InputNumber style={{ width: "50%" }} placeholder="Height" />
+                </Form.Item>
+              </Space.Compact>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Divider />
+        <Row>
+          <Col span={24}>
+            <Form.List
+              name="materials"
+              rules={[
+                {
+                  validator: async (_, materials) => {
+                    if (!materials || materials.length < 2) {
+                      return Promise.reject(new Error("Select at least 2 materials"))
+                    }
+                  }
+                }
+              ]}
+            >
+              {(fields, { add, remove }, { errors }) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Form.Item
+                      labelCol={{ span: 24 }}
+                      label={index === 0 ? "Materials" : ""}
+                      required={true}
+                      key={field.key}
+                      style={{ marginBottom: 15 }}
+                    >
+                      <Row gutter={8}>
+                        <Col flex="auto">
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "name"]}
+                            key={[field.key, "key"]}
+                            validateTrigger={["onChange", "onBlur"]}
+                            rules={[
+                              {
+                                required: true,
+                                whitespace: true,
+                                message: "Missing material name or delete this field"
+                              },
+                              {
+                                validator: async (_, value) => {
+                                  const optionExists = materials.some((material) => material.name === value)
+                                  if (!optionExists) {
+                                    return Promise.reject(new Error("Please select a valid material"))
+                                  }
+                                  return Promise.resolve()
+                                }
+                              }
+                            ]}
+                            style={{ marginBottom: 0 }}
+                          >
+                            <AutoComplete
+                              allowClear
+                              options={materials
+                                .filter((material) => !selectedMaterials.some((selected) => selected.name === material.name))
+                                .map((material) => ({
+                                  value: material.name,
+                                  label: `${material.name} (${material.availableQuantity})`
+                                }))}
+                              onSelect={(value) => {
+                                const selectedMaterial = materials.find((material) => material.name === value)
+                                if (selectedMaterial && selectedMaterial != "") {
+                                  const fieldKey = field.key
+                                  if (selectedMaterials.some((material) => material.fieldKey === fieldKey)) {
+                                    const indexToRemove = selectedMaterials.findIndex((material) => material.fieldKey === fieldKey)
+                                    if (indexToRemove !== -1) {
+                                      selectedMaterials.splice(indexToRemove, 1)
+                                    }
+                                  }
+                                  setSelectedMaterials([...selectedMaterials, { ...selectedMaterial, fieldKey }])
+                                  console.log("------onSelect-----")
+                                  console.log("selected field.key", field.key)
+                                  console.log("selectedMaterials", JSON.stringify(selectedMaterials))
+                                  console.log("-----------")
+                                }
+                              }}
+                              placeholder="Material name"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col flex="none">
+                          <Form.Item
+                            name={[field.name, "quantity"]}
+                            rules={[{ required: true, message: "Missing quantity" }]}
+                            style={{ marginBottom: 0 }}
+                          >
+                            <InputNumber placeholder="Quantity" />
+                          </Form.Item>
+                        </Col>
+                        {/* {fields.length > 1 ? ( */}
+                        <Col flex="none">
+                          {/* <pre>{JSON.stringify(field)}</pre> */}
+                          <MinusCircleOutlined
+                            className="dynamic-delete-button"
+                            onClick={() => {
+                              const indexToRemove = selectedMaterials.findIndex((material) => material.fieldKey === field.key)
+                              console.log(indexToRemove)
+                              if (indexToRemove !== -1) {
+                                selectedMaterials.splice(indexToRemove, 1)
+                                remove(field.name)
+                              } else {
+                                remove(field.name)
+                              }
+                              //setSelectedMaterials(selectedMaterials.filter(material => material.fieldKey !== field.key));
+                              console.log("------onClick-----")
+                              console.log("selected field.key", field.key)
+                              console.log("selectedMaterials", JSON.stringify(selectedMaterials))
+                              console.log("-----------")
+                            }}
+                          />
+                        </Col>
+                        {/* ) : null} */}
+                      </Row>
+                    </Form.Item>
+                  ))}
+
+                  <Form.Item>
+                    <Button type="dashed" onClick={() => add()} style={{ width: "100%" }} icon={<PlusOutlined />}>
+                      Add Material
+                    </Button>
+                    <Form.ErrorList errors={errors} />
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Col>
+        </Row>
+        <Divider />
+        <Row>
+          <Col span={24}>
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+              beforeUpload={() => false}
+              accept="image/*"
+            >
+              {fileList.length >= 8 ? null : uploadButton}
+            </Upload>
+            <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+              <img
+                alt="example"
+                style={{
+                  width: "100%"
+                }}
+                src={previewImage}
+              />
+            </Modal>
+          </Col>
+        </Row>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add
+          </Button>
+        </Form.Item>
+      </Form>
+    )
+  }
+  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
 }
 
 export default MeetingRooms
