@@ -1,4 +1,4 @@
-import { AppstoreOutlined, CalendarOutlined, ContainerOutlined } from "@ant-design/icons"
+import { AppstoreOutlined, BarsOutlined, CalendarOutlined, ContainerOutlined } from "@ant-design/icons"
 import { Col, Menu, Row } from "antd"
 import { useNavigate } from "react-router-dom"
 import PropTypes from "prop-types"
@@ -22,6 +22,12 @@ const items = [
     key: "3",
     to: "/dashboard/reservations",
     icon: <CalendarOutlined />
+  },
+  {
+    label: "Categories",
+    key: "4",
+    to: "/dashboard/categories",
+    icon: <BarsOutlined />
   }
 ]
 const Dashboard = ({ cmp }) => {

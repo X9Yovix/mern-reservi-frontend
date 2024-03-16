@@ -12,6 +12,7 @@ import MeetingRooms from "./Components/Dashboard/MeetingRooms/MeetingRooms"
 import Dashboard from "./Components/Dashboard/Dashboard"
 import Reservations from "./Components/Dashboard/Reservations/Reservations"
 import Materials from "./Components/Dashboard/Materials/Materials"
+import Categories from "./Components/Dashboard/Categories/Categories"
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           </Route>
           <Route path="/dashboard" element={<AdminAccessComponent />}>
             <Route path="materials" element={<Dashboard cmp={<Materials />} />} />
+            <Route path="categories" element={<Dashboard cmp={<Categories />} />} />
             <Route path="meeting-rooms" element={<Dashboard cmp={<MeetingRooms />} />} />
             <Route path="reservations" element={<Dashboard cmp={<Reservations />} />} />
           </Route>

@@ -1,7 +1,8 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
-import { Button, Form, Input, Row, Col, InputNumber, Divider, Space, Modal, Upload, AutoComplete, Spin, message } from "antd"
+import { Button, Form, Input, Row, Col, InputNumber, Divider, Space, Modal, Upload, AutoComplete, Spin, message, Select, Tag } from "antd"
 import { useEffect, useState } from "react"
 import axios from "../../../axios"
+import PropTypes from "prop-types"
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -19,6 +20,7 @@ const MeetingRooms = () => {
   const [fileList, setFileList] = useState([])
   const [materials, setMaterials] = useState([])
   const [selectedMaterials, setSelectedMaterials] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
 
   const fetchMaterials = async () => {
@@ -38,15 +40,66 @@ const MeetingRooms = () => {
       console.error("Error occurred while fetching materials:", error)
     }
   }
+  const fetchCategories = async () => {
+    try {
+      setLoading(true)
+      await axios
+        .get("/categories")
+        .then((res) => {
+          var categories = []
+          res.data.categories.map((category) => {
+            categories.push({
+              value: category._id,
+              label: category.name,
+              color: category.color
+            })
+          })
+          setCategories(categories)
+          setLoading(false)
+        })
+        .catch((err) => {
+          console.log(err)
+          setLoading(false)
+        })
+    } catch (error) {
+      console.error("Error occurred while fetching materials:", error)
+    }
+  }
 
   useEffect(() => {
     fetchMaterials()
+    fetchCategories()
     const storedMessage = localStorage.getItem("successMessage")
     if (storedMessage) {
       message.success(storedMessage)
       localStorage.removeItem("successMessage")
     }
   }, [])
+
+  const tagRender = (props) => {
+    const { label, value, closable, onClose } = props
+    const onPreventMouseDown = (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+    const category = categories.find((category) => category.value === value)
+    if (category) {
+      return (
+        <Tag
+          color={category.color}
+          onMouseDown={onPreventMouseDown}
+          closable={closable}
+          onClose={onClose}
+          style={{
+            marginInlineEnd: 4
+          }}
+        >
+          {label}
+        </Tag>
+      )
+    }
+    return null
+  }
 
   const handleCancel = () => setPreviewOpen(false)
   const handlePreview = async (file) => {
@@ -81,10 +134,17 @@ const MeetingRooms = () => {
     const formData = new FormData()
     formData.append("name", values.name)
     formData.append("capacity", values.capacity)
-
     formData.append("length", values.length)
     formData.append("width", values.width)
     formData.append("height", values.height)
+
+    var categoriesData = []
+    values.categories.map((category) => {
+      categoriesData.push({
+        _id: category
+      })
+    })
+    formData.append("categories", JSON.stringify(categoriesData))
 
     var materialsData = []
     values.materials.map((material, index) => {
@@ -200,6 +260,19 @@ const MeetingRooms = () => {
           </Col>
         </Row>
         <Divider />
+        <Form.Item name="categories" label="Categories" colon={false} rules={[{ required: true, message: "Please select at least one category" }]}>
+          <Select
+            mode="multiple"
+            style={{
+              width: "100%"
+            }}
+            placeholder="Select category"
+            optionLabelProp="label"
+            options={categories}
+            tagRender={(props) => tagRender(props)}
+          />
+        </Form.Item>
+        <Divider />
         <Row>
           <Col span={24}>
             <Form.List
@@ -287,9 +360,7 @@ const MeetingRooms = () => {
                             <InputNumber placeholder="Quantity" />
                           </Form.Item>
                         </Col>
-                        {/* {fields.length > 1 ? ( */}
                         <Col flex="none">
-                          {/* <pre>{JSON.stringify(field)}</pre> */}
                           <MinusCircleOutlined
                             className="dynamic-delete-button"
                             onClick={() => {
@@ -301,15 +372,9 @@ const MeetingRooms = () => {
                               } else {
                                 remove(field.name)
                               }
-                              //setSelectedMaterials(selectedMaterials.filter(material => material.fieldKey !== field.key));
-                              console.log("------onClick-----")
-                              console.log("selected field.key", field.key)
-                              console.log("selectedMaterials", JSON.stringify(selectedMaterials))
-                              console.log("-----------")
                             }}
                           />
                         </Col>
-                        {/* ) : null} */}
                       </Row>
                     </Form.Item>
                   ))}
@@ -360,4 +425,11 @@ const MeetingRooms = () => {
   return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
 }
 
+MeetingRooms.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.string,
+  closable: PropTypes.bool,
+  onClose: PropTypes.func,
+  color: PropTypes.string
+}
 export default MeetingRooms
