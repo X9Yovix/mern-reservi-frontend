@@ -3,6 +3,7 @@ import { Button, Form, Input, Row, Col, InputNumber, Divider, Space, Modal, Uplo
 import { useEffect, useState } from "react"
 import axios from "../../../axios"
 import PropTypes from "prop-types"
+import TextArea from "antd/es/input/TextArea"
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -133,6 +134,7 @@ const MeetingRooms = () => {
   const onFinish = async (values) => {
     const formData = new FormData()
     formData.append("name", values.name)
+    formData.append("description", values.description)
     formData.append("capacity", values.capacity)
     formData.append("length", values.length)
     formData.append("width", values.width)
@@ -214,6 +216,14 @@ const MeetingRooms = () => {
               ]}
             >
               <InputNumber placeholder="Capacity" />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Divider />
+        <Row>
+          <Col span={24}>
+            <Form.Item name="description" label="Description" colon={false}>
+              <TextArea placeholder="Description" />
             </Form.Item>
           </Col>
         </Row>
