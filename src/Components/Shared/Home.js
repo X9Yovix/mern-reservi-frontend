@@ -1,13 +1,16 @@
-import { Card, Carousel, Avatar, Spin, Row, Col, Button } from "antd"
+import { Card, Carousel, Spin, Row, Col, Button } from "antd"
 import { useEffect, useState } from "react"
 import axios from "../../axios"
-import { CalendarOutlined, EllipsisOutlined } from "@ant-design/icons"
+import { CalendarOutlined } from "@ant-design/icons"
+import { Link } from "react-router-dom"
+import "./Home.css"
 const { Meta } = Card
 
 const Home = () => {
   const [loading, setLoading] = useState(false)
   const [meetingRooms, setMeetingRooms] = useState([])
-  const fetchMeetingRomms = async () => {
+
+  const fetchMeetingRooms = async () => {
     try {
       setLoading(true)
       await axios
@@ -27,7 +30,7 @@ const Home = () => {
   }
 
   useEffect(() => {
-    fetchMeetingRomms()
+    fetchMeetingRooms()
   }, [])
 
   const renderForm = () => {
@@ -43,46 +46,21 @@ const Home = () => {
           {meetingRooms.map((meetingRoom, index) => (
             <Col span={8} key={index}>
               <div style={{ padding: "10px" }}>
-                <Card
-                  hoverable
-                  bordered={true}
-                  style={{
-                    border: "1px solid #ccc",
-                    borderRadius: "0px",
-                    paddingTop: "1px",
-                    width: 340,
-                    margin: "auto",
-                    boxShadow: "rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px"
-                  }}
-                  cover={
-                    <Carousel autoplay>
-                      {meetingRoom.images.map((image, index) => (
-                        <div key={index}>
-                          <img
-                            alt={meetingRoom.name + "-" + index}
-                            src={process.env.REACT_APP_BACKEND_STATIC_URL + image}
-                            style={{ width: "100%", height: "200px", objectFit: "contain" }}
-                          />
-                        </div>
-                      ))}
-                    </Carousel>
-                  }
-                  actions={[
-                    <Button type="dashed" danger ghost shape="round" icon={<EllipsisOutlined />} key="details">
-                      Details
-                    </Button>,
-                    <Button type="primary" ghost shape="round" icon={<CalendarOutlined />} key="reserve">
-                      Reserve
-                    </Button>
-                  ]}
-                >
-                  <Meta
-                    avatar={<Avatar size={40} shape="square" src={process.env.REACT_APP_BACKEND_STATIC_URL + meetingRoom.images[0]} />}
-                    title={meetingRoom.name}
-                    description={
-                      <div style={{ maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {meetingRoom.description}
+                <Card bordered={true} className="room-card">
+                  <Carousel autoplay>
+                    {meetingRoom.images.map((image, index) => (
+                      <div key={index}>
+                        <img alt={meetingRoom.name + "-" + index} src={process.env.REACT_APP_BACKEND_STATIC_URL + image} className="carousel-image" />
                       </div>
+                    ))}
+                  </Carousel>
+                  <Meta
+                    description={
+                      <Link to={`/rooms/details/${meetingRoom._id}`} className="room-link">
+                        <Button icon={<CalendarOutlined />} className="discover-button">
+                          Discover the room
+                        </Button>
+                      </Link>
                     }
                   />
                 </Card>

@@ -13,6 +13,7 @@ import Dashboard from "./Components/Dashboard/Dashboard"
 import Reservations from "./Components/Dashboard/Reservations/Reservations"
 import Materials from "./Components/Dashboard/Materials/Materials"
 import Categories from "./Components/Dashboard/Categories/Categories"
+import RoomDetails from "./Components/Shared/RoomDetails"
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
 
           <Route path="/home" element={<Home />} />
           <Route path="/" element={<Home />} />
+          <Route path="/rooms/details/:id" element={<RoomDetails />} />
           <Route path="/login" element={<Signin />} />
           <Route path="/register" element={<Signup />} />
           <Route path="/reset-password" element={<ResetPassword />} />

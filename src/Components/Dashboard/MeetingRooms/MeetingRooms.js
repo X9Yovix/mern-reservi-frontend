@@ -215,7 +215,7 @@ const MeetingRooms = () => {
                 { type: "number", min: 1, message: "Capacity must be a positive number" }
               ]}
             >
-              <InputNumber placeholder="Capacity" />
+              <InputNumber min={1} placeholder="Capacity" />
             </Form.Item>
           </Col>
         </Row>
@@ -241,7 +241,7 @@ const MeetingRooms = () => {
                     { type: "number", min: 1, message: "Length must be a positive number" }
                   ]}
                 >
-                  <InputNumber style={{ width: "50%" }} placeholder="Length" />
+                  <InputNumber min={1} style={{ width: "50%" }} placeholder="Length" />
                 </Form.Item>
                 <Form.Item
                   noStyle
@@ -252,7 +252,7 @@ const MeetingRooms = () => {
                     { type: "number", min: 1, message: "Width must be a positive number" }
                   ]}
                 >
-                  <InputNumber style={{ width: "50%" }} placeholder="Width" />
+                  <InputNumber min={1} style={{ width: "50%" }} placeholder="Width" />
                 </Form.Item>
                 <Form.Item
                   noStyle
@@ -263,7 +263,7 @@ const MeetingRooms = () => {
                     { type: "number", min: 1, message: "Height must be a positive number" }
                   ]}
                 >
-                  <InputNumber style={{ width: "50%" }} placeholder="Height" />
+                  <InputNumber min={1} style={{ width: "50%" }} placeholder="Height" />
                 </Form.Item>
               </Space.Compact>
             </Form.Item>
@@ -367,7 +367,7 @@ const MeetingRooms = () => {
                             rules={[{ required: true, message: "Missing quantity" }]}
                             style={{ marginBottom: 0 }}
                           >
-                            <InputNumber placeholder="Quantity" />
+                            <InputNumber min={1} placeholder="Quantity" />
                           </Form.Item>
                         </Col>
                         <Col flex="none">
