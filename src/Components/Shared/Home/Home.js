@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Card, Carousel, Spin, Row, Col, Button } from "antd"
 import { useEffect, useState } from "react"
 import axios from "../../../axios"
