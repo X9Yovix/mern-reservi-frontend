@@ -1,0 +1,15 @@
+.reserved-date {
+  background-color: #a0153e;
+  color: white;
+  text-align: center;
+  border-radius: 10%;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+}
+
+/* CSS for disabled fields */
+.ant-picker-cell-disabled .ant-picker-cell-inner {
+  opacity: 0.5;
+  pointer-events: none;
+}

@@ -1,6 +1,6 @@
 import { Card, Carousel, Spin, Row, Col, Button } from "antd"
 import { useEffect, useState } from "react"
-import axios from "../../axios"
+import axios from "../../../axios"
 import { CalendarOutlined } from "@ant-design/icons"
 import { Link } from "react-router-dom"
 import "./Home.css"
