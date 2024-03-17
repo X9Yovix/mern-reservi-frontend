@@ -130,17 +130,16 @@ const RoomDetails = () => {
                     {data.meeting_room.name}
                     {data.meeting_room.availability ? (
                       <Tooltip title="This room is currently available for reservation">
-                        <CheckCircleOutlined style={{ fontSize: '16px', color: '#87d068', marginLeft: '8px' }} />
+                        <CheckCircleOutlined style={{ fontSize: "16px", color: "#87d068", marginLeft: "8px" }} />
                       </Tooltip>
                     ) : (
                       <Tooltip title="This room is currently unavailable for reservation">
-                        <CloseCircleOutlined style={{ fontSize: '16px', color: '#f50', marginLeft: '8px' }} />
+                        <CloseCircleOutlined style={{ fontSize: "16px", color: "#f50", marginLeft: "8px" }} />
                       </Tooltip>
                     )}
                   </h1>
                   <span style={{ fontSize: "14px", color: "#666", marginTop: "5px" }}>Capacity: {data.meeting_room.capacity}</span>
                 </div>
-
               </div>
 
               <div>
@@ -215,7 +214,7 @@ const RoomDetails = () => {
                       validator() {
                         const selectedDates = getFieldValue("reservation_range")
                         if (!selectedDates || !selectedDates[0] || !selectedDates[1]) {
-                          return Promise.resolve();
+                          return Promise.resolve()
                         }
                         const selectedRange = [selectedDates[0].toDate(), selectedDates[1].toDate()]
 
@@ -253,8 +252,7 @@ const RoomDetails = () => {
                         return true
                       }
                       return false
-                    }
-                    }
+                    }}
                   />
                 </Form.Item>
                 <Form.Item name="additional_info" label="Additional Information">
@@ -269,9 +267,8 @@ const RoomDetails = () => {
             </Col>
           </Row>
         </>
-      )
-      }
-    </Spin >
+      )}
+    </Spin>
   )
 }
 
