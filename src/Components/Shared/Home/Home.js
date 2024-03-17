@@ -17,7 +17,8 @@ const Home = () => {
         .get("/meeting_rooms")
         .then((res) => {
           console.log(res)
-          setMeetingRooms(res.data.meeting_rooms.filter((meetingRoom) => meetingRoom.availability === true))
+          //setMeetingRooms(res.data.meeting_rooms.filter((meetingRoom) => meetingRoom.availability === true))
+          setMeetingRooms(res.data.meeting_rooms)
           setLoading(false)
         })
         .catch((err) => {

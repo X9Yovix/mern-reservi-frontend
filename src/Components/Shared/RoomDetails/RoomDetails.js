@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
-import { Spin, Row, Col, Carousel, Tag, Form, Input, Button, DatePicker, InputNumber, message, Collapse, Typography } from "antd"
+import { Spin, Row, Col, Carousel, Tag, Form, Input, Button, DatePicker, InputNumber, message, Collapse, Typography, Tooltip, Divider } from "antd"
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "../../../axios"
 import "./RoomDetails.css"
@@ -9,9 +10,6 @@ const { RangePicker } = DatePicker
 const RoomDetails = () => {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)
-  //usefull with time picker
-  //const [selectedStartDate, setSelectedStartDate] = useState(null)
-  //const [disabledDateEnd, setDisabledDateEnd] = useState(true)
   const [reservedDates, setReservedDates] = useState([])
 
   const [reservationForm] = Form.useForm()
@@ -62,6 +60,7 @@ const RoomDetails = () => {
   const onFinish = async (values) => {
     try {
       values.meeting_rooms = params.id
+      values.users = JSON.parse(localStorage.getItem("user"))._id
       values.reservation_range = values.reservation_range.map((date) => date.$d)
       await axios
         .post("/reservations", values)
@@ -108,7 +107,7 @@ const RoomDetails = () => {
     <Spin spinning={loading} tip="Loading...">
       {data && (
         <>
-          <Row gutter={[16, 16]}>
+          <Row>
             <Col span={24}>
               <Carousel autoplay>
                 {data.meeting_room.images.map((image, index) => (
@@ -123,21 +122,42 @@ const RoomDetails = () => {
               </Carousel>
             </Col>
           </Row>
-          <Row gutter={[16, 16]} style={{ background: "#f0f2f5", padding: "20px" }}>
+          <Row style={{ background: "#f0f2f5", padding: "20px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
             <Col span={24}>
-              <h1>{data.meeting_room.name}</h1>
-              <p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px", marginTop: "10px" }}>
+                <div>
+                  <h1 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>
+                    {data.meeting_room.name}
+                    {data.meeting_room.availability ? (
+                      <Tooltip title="This room is currently available for reservation">
+                        <CheckCircleOutlined style={{ fontSize: '16px', color: '#87d068', marginLeft: '8px' }} />
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title="This room is currently unavailable for reservation">
+                        <CloseCircleOutlined style={{ fontSize: '16px', color: '#f50', marginLeft: '8px' }} />
+                      </Tooltip>
+                    )}
+                  </h1>
+                  <span style={{ fontSize: "14px", color: "#666", marginTop: "5px" }}>Capacity: {data.meeting_room.capacity}</span>
+                </div>
+
+              </div>
+
+              <div>
                 {data.categories.map((item) => (
-                  <Tag color={item.color} key={item._id}>
+                  <Tag color={item.color} key={item._id} style={{ marginRight: "8px" }}>
                     {item.name}
                   </Tag>
                 ))}
-              </p>
-              <p>Capacity of this room: {data.meeting_room.capacity}</p>
-              <p>{data.meeting_room.description}</p>
+              </div>
+              <Divider />
+              <div>
+                <p style={{ fontSize: "16px", lineHeight: "1.6", marginBottom: "0" }}>{data.meeting_room.description}</p>
+              </div>
             </Col>
           </Row>
-          <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+
+          <Row style={{ marginTop: "20px" }}>
             <Col span={24}>
               <Collapse
                 items={[
@@ -164,7 +184,7 @@ const RoomDetails = () => {
               />
             </Col>
           </Row>
-          <Row gutter={[16, 16]} style={{ background: "#f0f2f5", padding: "20px", marginTop: "20px" }}>
+          <Row style={{ background: "#f0f2f5", padding: "20px", marginTop: "20px" }}>
             <Col span={24}>
               <Typography.Title level={3}>Reservation Form</Typography.Title>
               <Form form={reservationForm} name="reservation-form" onFinish={onFinish} layout="vertical">
@@ -184,7 +204,7 @@ const RoomDetails = () => {
                     })
                   ]}
                 >
-                  <InputNumber min={1} />
+                  <InputNumber disabled={data.meeting_room.availability ? false : true} min={1} />
                 </Form.Item>
                 <Form.Item
                   name="reservation_range"
@@ -194,6 +214,9 @@ const RoomDetails = () => {
                     ({ getFieldValue }) => ({
                       validator() {
                         const selectedDates = getFieldValue("reservation_range")
+                        if (!selectedDates || !selectedDates[0] || !selectedDates[1]) {
+                          return Promise.resolve();
+                        }
                         const selectedRange = [selectedDates[0].toDate(), selectedDates[1].toDate()]
 
                         for (const reservation of reservedDates) {
@@ -214,106 +237,31 @@ const RoomDetails = () => {
                   ]}
                 >
                   <RangePicker
-                    /* showTime={{ format: 'HH:mm' }} */
-                    /* disabledDate={
-                      disabledDateEnd
-                        ? () => true
-                        : (current) => {
-                          const today = new Date()
-                          today.setHours(0, 0, 0, 0)
-                          return disabledDateEnd || (current && current < today)
-                        }
-                    } */
-                    /* cellRender={(date) => {
-                      for (const reservation of reservedDates) {
-                        const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0);
-                        const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0);
-                        if (date && (new Date(date.$d) >= startDate && new Date(date.$d) <= endDate)) {
-                          return (
-                            <div className="reserved-date">
-                              <span>{date.$D}</span>
-                            </div>
-                          );
-                        }
-                      }
-                      return (
-                        <div className="normal-date">
-                          <span>{date.$D}</span>
-                        </div>
-                      );
-                    }} */
+                    disabled={data.meeting_room.availability ? false : true}
                     cellRender={cellRender}
-                    disabledDate={
-                      /* 
-                      // usefull with time picker
-                      disabledDateEnd
-                        ? () => true
-                        : */
-                      (current) => {
-                        for (const reservation of reservedDates) {
-                          const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
-                          const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
-                          if (current && new Date(current.$d) >= startDate && new Date(current.$d) <= endDate) {
-                            return true
-                          }
-                        }
-                        //const today = new Date().setHours(0, 0, 0, 0)
-                        const today = new Date()
-                        if (current < today) {
+                    disabledDate={(current) => {
+                      for (const reservation of reservedDates) {
+                        const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
+                        const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
+                        if (current && new Date(current.$d) >= startDate && new Date(current.$d) <= endDate) {
                           return true
                         }
-                        return false
                       }
+                      //const today = new Date().setHours(0, 0, 0, 0)
+                      const today = new Date()
+                      if (current < today) {
+                        return true
+                      }
+                      return false
                     }
-                    // usefull with time picker
-                    /* onFocus={(_, i) => {
-                      if (i.range === "end") {
-                        setDisabledDateEnd(true)
-                      }
-                      if (i.range === "end" && selectedStartDate) {
-                        setDisabledDateEnd(false)
-                      }
-                      if (i.range === "start") {
-                        setDisabledDateEnd(false)
-                      }
-                    }}
-                     onCalendarChange={(dates) => {
-
-                      if (dates[0] && dates[0].$d) {
-                        //setSelectedStartDate(dates[0].toDate())
-                        setSelectedStartDate(new Date(dates[0].$d))
-                      }
-                    }} */
-                    /* disabledTime={(selectedDate, type) => {
-                    if (type === "start") {
-                      const currentHour = new Date().getHours() + 1
-                      const disabledStartHours = selectedDate.$d.getDate() === new Date().getDate() ? [...Array(currentHour).keys()] : []
-
-                      return {
-                        disabledHours: () => disabledStartHours
-                      }
-                    } else if (type === "end" && !selectedStartDate) {
-                      return {
-                        disabledHours: () => [...Array(24).keys()],
-                        disabledMinutes: () => [...Array(60).keys()],
-                        disabledSeconds: () => [...Array(60).keys()]
-                      }
-                    } else if (type === "end" && selectedStartDate) {
-                      const selectedHour = selectedStartDate.getHours() + 1
-                      const disabledEndHours = selectedDate.$d.getDate() === new Date().getDate() ? [...Array(selectedHour).keys()] : []
-
-                      return {
-                        disabledHours: () => disabledEndHours
-                      }
                     }
-                  }} */
                   />
                 </Form.Item>
                 <Form.Item name="additional_info" label="Additional Information">
-                  <TextArea rows={4} />
+                  <TextArea disabled={data.meeting_room.availability ? false : true} rows={4} />
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary" htmlType="submit">
+                  <Button disabled={data.meeting_room.availability ? false : true} type="primary" htmlType="submit">
                     Submit Reservation
                   </Button>
                 </Form.Item>
@@ -321,8 +269,9 @@ const RoomDetails = () => {
             </Col>
           </Row>
         </>
-      )}
-    </Spin>
+      )
+      }
+    </Spin >
   )
 }
 

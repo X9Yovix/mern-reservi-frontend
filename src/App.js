@@ -1,6 +1,6 @@
 import "./App.css"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-//import Header from "./Components/Layout/Header"
+import Header from "./Components/Layout/Header"
 import Signup from "./Components/User/Signup/Signup"
 import Signin from "./Components/User/Signin/Signin"
 import PrivateComponent from "./Components/Utils/PrivateComponent"
@@ -19,7 +19,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        {/* <Header /> */}
+        <Header />
         <Routes>
           <Route path="/*" element={<Home />} />
 
