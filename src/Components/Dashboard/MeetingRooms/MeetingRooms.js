@@ -193,9 +193,9 @@ const MeetingRooms = () => {
         style={{
           width: "80%",
           margin: "auto",
-          padding: "20px",
-          border: "1px solid #ccc",
-          borderRadius: "10px",
+          padding: "10px",
+          /* border: "1px solid #ccc",
+          borderRadius: "10px", */
           marginTop: "20px"
         }}
       >

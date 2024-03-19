@@ -10,10 +10,11 @@ import ResetPasswordVerify from "./Components/User/ResetPasswordVerify/ResetPass
 import AdminAccessComponent from "./Components/Utils/AdminAccessComponent"
 import MeetingRooms from "./Components/Dashboard/MeetingRooms/MeetingRooms"
 import Dashboard from "./Components/Dashboard/Dashboard"
-import Reservations from "./Components/Dashboard/Reservations/Reservations"
+//import Reservations from "./Components/Dashboard/Reservations/Reservations"
 import Materials from "./Components/Dashboard/Materials/Materials"
 import Categories from "./Components/Dashboard/Categories/Categories"
 import RoomDetails from "./Components/Shared/RoomDetails/RoomDetails"
+import PendingReservations from "./Components/Dashboard/Reservations/PendingReservations/PendingReservations"
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
             <Route path="materials" element={<Dashboard cmp={<Materials />} />} />
             <Route path="categories" element={<Dashboard cmp={<Categories />} />} />
             <Route path="meeting-rooms" element={<Dashboard cmp={<MeetingRooms />} />} />
-            <Route path="reservations" element={<Dashboard cmp={<Reservations />} />} />
+            <Route path="reservations" element={<Dashboard cmp={<PendingReservations />} />} />
           </Route>
         </Routes>
       </BrowserRouter>
