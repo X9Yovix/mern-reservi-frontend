@@ -4,6 +4,7 @@ import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "../../../axios"
 import "./RoomDetails.css"
+
 const { TextArea } = Input
 const { RangePicker } = DatePicker
 
@@ -86,16 +87,27 @@ const RoomDetails = () => {
         return <div className="ant-picker-cell-inner">{date}</div>
       }
 
-      const isReserved = reservedDates.some((reservation) => {
+      const reservedPendingDates = reservedDates.filter((reservation) => reservation.status === "pending")
+      const isPending = reservedPendingDates.some((reservation) => {
         const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
         const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
         return date && new Date(date).getTime() >= startDate && new Date(date).getTime() <= endDate
       })
 
-      const style = { backgroundColor: "darkred", color: "white" }
+      const reservedAcceptedDates = reservedDates.filter((reservation) => reservation.status === "confirmed")
+      const isReserved = reservedAcceptedDates.some((reservation) => {
+        const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
+        const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
+        return date && new Date(date).getTime() >= startDate && new Date(date).getTime() <= endDate
+      })
+
+      const styleIsPending = { backgroundColor: "darkred", color: "white" }
+      const styleIsReserved = { backgroundColor: "green", color: "white" }
+
+      const cellStyle = isPending ? styleIsPending : isReserved ? styleIsReserved : {}
 
       return (
-        <div className="ant-picker-cell-inner" style={isReserved ? style : {}}>
+        <div className="ant-picker-cell-inner" style={cellStyle}>
           {date.date()}
         </div>
       )
@@ -105,7 +117,7 @@ const RoomDetails = () => {
 
   return (
     <Spin spinning={loading} tip="Loading...">
-      {data && (
+      {data && reservedDates && (
         <>
           <Row>
             <Col span={24}>
@@ -227,7 +239,9 @@ const RoomDetails = () => {
                             (selectedRange[1] >= startDate && selectedRange[1] <= endDate) ||
                             (selectedRange[0] <= startDate && selectedRange[1] >= endDate)
                           ) {
-                            return Promise.reject("Selected date range is overlapping with an existing reservation")
+                            if (reservation.status === "pending" || reservation.status === "confirmed") {
+                              return Promise.reject("Selected date range is overlapping with an existing reservation")
+                            }
                           }
                         }
                         return Promise.resolve()
@@ -239,7 +253,8 @@ const RoomDetails = () => {
                     disabled={data.meeting_room.availability ? false : true}
                     cellRender={cellRender}
                     disabledDate={(current) => {
-                      for (const reservation of reservedDates) {
+                      const reservationsFiltered = reservedDates.filter((reservation) => reservation.status !== "rejected")
+                      for (const reservation of reservationsFiltered) {
                         const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
                         const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
                         if (current && new Date(current.$d) >= startDate && new Date(current.$d) <= endDate) {

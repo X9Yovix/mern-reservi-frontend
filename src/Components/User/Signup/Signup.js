@@ -45,8 +45,8 @@ const Signup = () => {
     }
   }
 
-  const renderForm = () => {
-    return (
+  return (
+    <Spin spinning={loading} tip="Loading...">
       <Form
         className="signup-form"
         labelCol={{ span: 4 }}
@@ -153,10 +153,8 @@ const Signup = () => {
           </Button>
         </Form.Item>
       </Form>
-    )
-  }
-
-  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+    </Spin>
+  )
 }
 
 export default Signup

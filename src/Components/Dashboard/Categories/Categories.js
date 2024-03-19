@@ -37,8 +37,8 @@ const Categories = () => {
     }
   }
 
-  const renderForm = () => {
-    return (
+  return (
+    <Spin spinning={loading} tip="Loading...">
       <Form
         form={form}
         name="material-form"
@@ -71,9 +71,8 @@ const Categories = () => {
           </Button>
         </Form.Item>
       </Form>
-    )
-  }
-  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+    </Spin>
+  )
 }
 
 export default Categories

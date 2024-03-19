@@ -184,8 +184,8 @@ const MeetingRooms = () => {
     }
   }
 
-  const renderForm = () => {
-    return (
+  return (
+    <Spin spinning={loading} tip="Loading...">
       <Form
         form={form}
         name="meeting-room-form"
@@ -430,9 +430,8 @@ const MeetingRooms = () => {
           </Button>
         </Form.Item>
       </Form>
-    )
-  }
-  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+    </Spin>
+  )
 }
 
 MeetingRooms.propTypes = {

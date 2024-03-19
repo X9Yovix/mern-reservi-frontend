@@ -1,0 +1,11 @@
+.confirm-btn:hover {
+  color: #52c41a !important;
+  border-color: #52c41a !important;
+  background: #ffffff !important;
+}
+
+.decline-btn:hover {
+  color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  background: #ffffff !important;
+}

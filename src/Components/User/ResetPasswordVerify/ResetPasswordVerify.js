@@ -41,8 +41,8 @@ const ResetPasswordVerify = () => {
     }
   }
 
-  const renderForm = () => {
-    return (
+  return (
+    <Spin spinning={loading} tip="Loading...">
       <Form
         className="signin-form"
         labelCol={{ span: 8 }}
@@ -92,10 +92,8 @@ const ResetPasswordVerify = () => {
           </Button>
         </Form.Item>
       </Form>
-    )
-  }
-
-  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+    </Spin>
+  )
 }
 
 export default ResetPasswordVerify

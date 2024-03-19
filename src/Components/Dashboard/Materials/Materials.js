@@ -25,8 +25,8 @@ const Materials = () => {
     }
   }
 
-  const renderForm = () => {
-    return (
+  return (
+    <Spin spinning={loading} tip="Loading...">
       <Form
         form={form}
         name="material-form"
@@ -35,8 +35,6 @@ const Materials = () => {
           width: "80%",
           margin: "auto",
           padding: "10px",
-          /* border: "1px solid #ccc",
-          borderRadius: "10px", */
           marginTop: "20px"
         }}
       >
@@ -75,9 +73,8 @@ const Materials = () => {
           </Button>
         </Form.Item>
       </Form>
-    )
-  }
-  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+    </Spin>
+  )
 }
 
 export default Materials

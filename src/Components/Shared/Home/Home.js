@@ -34,8 +34,8 @@ const Home = () => {
     fetchMeetingRooms()
   }, [])
 
-  const renderForm = () => {
-    return (
+  return (
+    <Spin spinning={loading} tip="Loading...">
       <div style={{ background: "#f0f2f5", padding: "20px" }}>
         <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Meeting Rooms</h1>
         <Row
@@ -70,10 +70,8 @@ const Home = () => {
           ))}
         </Row>
       </div>
-    )
-  }
-
-  return <>{loading ? <Spin tip="Loading...">{renderForm()}</Spin> : renderForm()}</>
+    </Spin>
+  )
 }
 
 export default Home
