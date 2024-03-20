@@ -253,7 +253,9 @@ const RoomDetails = () => {
                     disabled={data.meeting_room.availability ? false : true}
                     cellRender={cellRender}
                     disabledDate={(current) => {
-                      const reservationsFiltered = reservedDates.filter((reservation) => reservation.status !== "rejected")
+                      const reservationsFiltered = reservedDates.filter(
+                        (reservation) => reservation.status !== "rejected" && reservation.status !== "canceled"
+                      )
                       for (const reservation of reservationsFiltered) {
                         const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
                         const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)

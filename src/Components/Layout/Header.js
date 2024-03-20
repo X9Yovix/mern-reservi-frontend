@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import { Menu, message } from "antd"
-import { DashboardOutlined, HomeOutlined, LoginOutlined, LogoutOutlined, PlusCircleOutlined } from "@ant-design/icons"
+import { ContactsOutlined, DashboardOutlined, HomeOutlined, LoginOutlined, LogoutOutlined, PlusCircleOutlined } from "@ant-design/icons"
 import { useState } from "react"
 
 const Header = () => {
@@ -26,6 +26,11 @@ const Header = () => {
       icon: <HomeOutlined />
     },
     {
+      label: <Link to="/reservations">My Reservations</Link>,
+      key: "reservations",
+      icon: <ContactsOutlined />
+    },
+    {
       label: <Link to="/login">Sign In</Link>,
       key: "login",
       icon: <LoginOutlined />
@@ -48,7 +53,7 @@ const Header = () => {
 
   const isAuthenticated = localStorage.getItem("token")
   const filteredItems = isAuthenticated
-    ? items.filter((item) => ["dashboard", "home", "logout"].includes(item.key))
+    ? items.filter((item) => ["dashboard", "reservations", "home", "logout"].includes(item.key))
     : items.filter((item) => ["home", "login", "register"].includes(item.key))
 
   const onClick = (e) => {

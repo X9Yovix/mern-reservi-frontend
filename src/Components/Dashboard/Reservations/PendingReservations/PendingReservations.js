@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react"
 import { List, Spin, Button, Space, message, Pagination, Avatar, Carousel, Modal } from "antd"
-import { BankOutlined, ClockCircleOutlined, DislikeOutlined, LikeOutlined, ScheduleOutlined, UserOutlined } from "@ant-design/icons"
+import {
+  BankOutlined,
+  ClockCircleOutlined,
+  DislikeOutlined,
+  InfoCircleOutlined,
+  LikeOutlined,
+  ScheduleOutlined,
+  UserOutlined
+} from "@ant-design/icons"
 import axios from "../../../../axios"
 import "./PendingReservations.css"
 
@@ -9,6 +17,13 @@ const PendingReservations = () => {
   const [reservations, setReservations] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
+
+  const handleSeeMore = (additional_info) => {
+    Modal.info({
+      title: "Additional Information",
+      content: <p>{additional_info}</p>
+    })
+  }
 
   const fetchReservations = async (page) => {
     try {
@@ -143,20 +158,52 @@ const PendingReservations = () => {
                       <span>
                         <BankOutlined style={{ marginRight: 8 }} />
                       </span>{" "}
-                      Room: {item.meeting_rooms.name}
+                      Room: <span style={{ color: "rgba(0, 0, 0, 0.9)" }}>{item.meeting_rooms.name}</span>
                     </div>
                     <div>
                       <span>
                         <ScheduleOutlined style={{ marginRight: 8 }} />
                       </span>{" "}
-                      Participants: {item.participants}
+                      Participants: <span style={{ color: "rgba(0, 0, 0, 0.9)" }}>{item.participants}</span>
                     </div>
                     <div>
                       <span>
                         <ClockCircleOutlined style={{ marginRight: 8 }} />
                       </span>{" "}
-                      Reservation: {new Date(item.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} -{" "}
-                      {new Date(item.end_date).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}
+                      Reservation:{" "}
+                      <span style={{ color: "rgba(0, 0, 0, 0.9)" }}>
+                        {new Date(item.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} -{" "}
+                        {new Date(item.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        color: "rgba(0, 0, 0, 0.6)",
+                        width: "80%",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <span>
+                          <InfoCircleOutlined style={{ marginRight: 8 }} />
+                        </span>
+                        Additional Info:{" "}
+                        {item.additional_info.length > 80 ? (
+                          <span style={{ color: "rgba(0, 0, 0, 0.9)" }}>{item.additional_info.slice(0, 80) + "..."}</span>
+                        ) : item.additional_info.length === 0 ? (
+                          <span style={{ color: "rgba(0, 0, 0, 0.6)" }}>No additional information provided</span>
+                        ) : (
+                          <span style={{ color: "rgba(0, 0, 0, 0.9)" }}>{item.additional_info}</span>
+                        )}
+                      </div>
+                      {item.additional_info.length > 80 && (
+                        <div style={{ color: "#1890ff", cursor: "pointer", marginLeft: "10px" }} onClick={() => handleSeeMore(item.additional_info)}>
+                          See more
+                        </div>
+                      )}
                     </div>
                   </div>
                 }

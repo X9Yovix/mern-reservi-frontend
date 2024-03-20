@@ -15,6 +15,7 @@ import Materials from "./Components/Dashboard/Materials/Materials"
 import Categories from "./Components/Dashboard/Categories/Categories"
 import RoomDetails from "./Components/Shared/RoomDetails/RoomDetails"
 import PendingReservations from "./Components/Dashboard/Reservations/PendingReservations/PendingReservations"
+import Reservations from "./Components/User/Reservations/Reservations"
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
 
           <Route element={<PrivateComponent />}>
             <Route path="/clients" element={<h1>clients</h1>} />
+            <Route path="/reservations" element={<Reservations />} />
           </Route>
           <Route path="/dashboard" element={<AdminAccessComponent />}>
             <Route path="materials" element={<Dashboard cmp={<Materials />} />} />
