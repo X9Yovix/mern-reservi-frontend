@@ -68,7 +68,7 @@ const RoomDetails = () => {
         .then((res) => {
           console.log(res)
           message.success(res.data.message)
-          navigate("/")
+          navigate("/home")
         })
         .catch((err) => {
           console.log(err)

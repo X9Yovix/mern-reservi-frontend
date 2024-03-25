@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { Spin, Tag, Form, Button, DatePicker, Input, InputNumber, message, Modal, Pagination, Table, Space } from "antd"
+import { Spin, Tag, Form, Button, DatePicker, Input, InputNumber, message, Modal, Pagination, Table, Space, theme, Layout } from "antd"
 import { CloseCircleOutlined, EditOutlined } from "@ant-design/icons"
 import axios from "../../../axios"
 import dayjs from "dayjs"
@@ -17,6 +17,10 @@ const Reservations = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editReservation, setEditReservation] = useState(null)
   const [reservedDates, setReservedDates] = useState([])
+
+  const {
+    token: { colorBgContainer }
+  } = theme.useToken()
 
   const [editReservationForm] = Form.useForm()
 
@@ -305,107 +309,110 @@ const Reservations = () => {
   }, [currentPage])
 
   return (
-    <Spin spinning={loading} tip="Loading...">
-      <Table columns={columns} dataSource={reservations} pagination={false} />
-      {totalPages > 0 && (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
-        </div>
-      )}
-      <Modal title="Additional Information" open={!!additionalInfo} onCancel={handleCloseModal} footer={null}>
-        <p>{additionalInfo}</p>
-      </Modal>
+    <Layout style={{ background: colorBgContainer }}>
+      <Spin spinning={loading} tip="Loading...">
+        <Table columns={columns} dataSource={reservations} pagination={false} />
+        {totalPages > 0 && (
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
+          </div>
+        )}
+        <Modal title="Additional Information" open={!!additionalInfo} onCancel={handleCloseModal} footer={null}>
+          <p>{additionalInfo}</p>
+        </Modal>
 
-      <Modal title="Edit Reservation" open={editModalVisible} onCancel={handleEditModalCancel} onOk={handleEditModalOk} confirmLoading={loading}>
-        {editReservation && (
-          <Form form={editReservationForm} name="edit-reservation-form" onFinish={handleUpdateRowReservation}>
-            <Form.Item
-              name="participants"
-              label="Participants"
-              rules={[
-                { required: true, message: "Please input number of participants" },
-                { type: "number", min: 1, message: "Number of participants must be at least 1" },
-                () => ({
-                  validator(_, value) {
-                    if (value && value > editReservation.capacity) {
-                      return Promise.reject(`Number of participants cannot exceed ${editReservation.capacity}`)
-                    }
-                    return Promise.resolve()
-                  }
-                })
-              ]}
-            >
-              <InputNumber min={1} />
-            </Form.Item>
-            <Form.Item
-              name="reservation_range"
-              label="Reservation Date & Time"
-              rules={[
-                { required: true, message: "Please select reservation date and time" },
-                ({ getFieldValue }) => ({
-                  validator() {
-                    const selectedDates = getFieldValue("reservation_range")
-                    if (!selectedDates || !selectedDates[0] || !selectedDates[1]) {
+        <Modal title="Edit Reservation" open={editModalVisible} onCancel={handleEditModalCancel} onOk={handleEditModalOk} confirmLoading={loading}>
+          {editReservation && (
+            <Form form={editReservationForm} name="edit-reservation-form" onFinish={handleUpdateRowReservation}>
+              <Form.Item
+                name="participants"
+                label="Participants"
+                rules={[
+                  { required: true, message: "Please input number of participants" },
+                  { type: "number", min: 1, message: "Number of participants must be at least 1" },
+                  () => ({
+                    validator(_, value) {
+                      if (value && value > editReservation.capacity) {
+                        return Promise.reject(`Number of participants cannot exceed ${editReservation.capacity}`)
+                      }
                       return Promise.resolve()
                     }
-                    const selectedRange = [selectedDates[0].toDate(), selectedDates[1].toDate()]
+                  })
+                ]}
+              >
+                <InputNumber min={1} />
+              </Form.Item>
+              <Form.Item
+                name="reservation_range"
+                label="Reservation Date & Time"
+                rules={[
+                  { required: true, message: "Please select reservation date and time" },
+                  ({ getFieldValue }) => ({
+                    validator() {
+                      const selectedDates = getFieldValue("reservation_range")
+                      if (!selectedDates || !selectedDates[0] || !selectedDates[1]) {
+                        return Promise.resolve()
+                      }
+                      const selectedRange = [selectedDates[0].toDate(), selectedDates[1].toDate()]
 
-                    for (const reservation of reservedDates) {
-                      const startDate = new Date(reservation.start_date)
-                      const endDate = new Date(reservation.end_date)
-                      if (
-                        (selectedRange[0] >= startDate && selectedRange[0] <= endDate) ||
-                        (selectedRange[1] >= startDate && selectedRange[1] <= endDate) ||
-                        (selectedRange[0] <= startDate && selectedRange[1] >= endDate)
-                      ) {
-                        // check if its in old range dates
+                      for (const reservation of reservedDates) {
+                        const startDate = new Date(reservation.start_date)
+                        const endDate = new Date(reservation.end_date)
                         if (
-                          (editReservation.start_date >= startDate && editReservation.start_date <= endDate) ||
-                          (editReservation.end_date >= startDate && editReservation.end_date <= endDate) ||
-                          (editReservation.start_date <= startDate && editReservation.end_date >= endDate)
+                          (selectedRange[0] >= startDate && selectedRange[0] <= endDate) ||
+                          (selectedRange[1] >= startDate && selectedRange[1] <= endDate) ||
+                          (selectedRange[0] <= startDate && selectedRange[1] >= endDate)
                         ) {
-                          continue
-                        }
-                        // check if it overlaps with other reservations
-                        if (reservation.status === "pending" || reservation.status === "confirmed") {
-                          return Promise.reject("Selected date range is overlapping with an existing reservation")
+                          // check if its in old range dates
+                          if (
+                            (editReservation.start_date >= startDate && editReservation.start_date <= endDate) ||
+                            (editReservation.end_date >= startDate && editReservation.end_date <= endDate) ||
+                            (editReservation.start_date <= startDate && editReservation.end_date >= endDate)
+                          ) {
+                            continue
+                          }
+                          // check if it overlaps with other reservations
+                          if (reservation.status === "pending" || reservation.status === "confirmed") {
+                            return Promise.reject("Selected date range is overlapping with an existing reservation")
+                          }
                         }
                       }
+                      return Promise.resolve()
                     }
-                    return Promise.resolve()
-                  }
-                })
-              ]}
-            >
-              <RangePicker
-                cellRender={cellRender}
-                disabledDate={(current) => {
-                  const reservationsFiltered = reservedDates.filter(
-                    (reservation) => reservation.status !== "rejected" && reservation.status !== "canceled" && reservation._id !== editReservation.key
-                  )
-                  for (const reservation of reservationsFiltered) {
-                    const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
-                    const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
-                    if (current && new Date(current.$d) >= startDate && new Date(current.$d) <= endDate) {
+                  })
+                ]}
+              >
+                <RangePicker
+                  cellRender={cellRender}
+                  disabledDate={(current) => {
+                    const reservationsFiltered = reservedDates.filter(
+                      (reservation) =>
+                        reservation.status !== "rejected" && reservation.status !== "canceled" && reservation._id !== editReservation.key
+                    )
+                    for (const reservation of reservationsFiltered) {
+                      const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
+                      const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
+                      if (current && new Date(current.$d) >= startDate && new Date(current.$d) <= endDate) {
+                        return true
+                      }
+                    }
+                    //const today = new Date().setHours(0, 0, 0, 0)
+                    const today = new Date()
+                    if (current < today) {
                       return true
                     }
-                  }
-                  //const today = new Date().setHours(0, 0, 0, 0)
-                  const today = new Date()
-                  if (current < today) {
-                    return true
-                  }
-                  return false
-                }}
-              />
-            </Form.Item>
-            <Form.Item name="additional_info" label="Additional Information">
-              <TextArea rows={4} />
-            </Form.Item>
-          </Form>
-        )}
-      </Modal>
-    </Spin>
+                    return false
+                  }}
+                />
+              </Form.Item>
+              <Form.Item name="additional_info" label="Additional Information">
+                <TextArea rows={4} />
+              </Form.Item>
+            </Form>
+          )}
+        </Modal>
+      </Spin>
+    </Layout>
   )
 }
 

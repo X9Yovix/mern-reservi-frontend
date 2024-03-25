@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Button, Form, Input, Spin, Typography, message } from "antd"
+import { Button, Form, Input, Layout, Spin, Typography, message, theme } from "antd"
 import { EyeInvisibleOutlined, EyeTwoTone, LoginOutlined, MailOutlined } from "@ant-design/icons"
 import { useNavigate } from "react-router-dom"
 import axios from "../../../axios"
@@ -7,6 +7,10 @@ import "./Signin.css"
 
 const Signin = () => {
   const [loading, setLoading] = useState(false)
+
+  const {
+    token: { colorBgContainer }
+  } = theme.useToken()
 
   const navigate = useNavigate()
   const isAuthenticated = localStorage.getItem("token")
@@ -45,50 +49,52 @@ const Signin = () => {
   }
 
   return (
-    <Spin spinning={loading} tip="Loading...">
-      <Form
-        className="signin-form"
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 18 }}
-        layout="horizontal"
-        style={{ maxWidth: 500 }}
-        variant="filled"
-        onFinish={handleSubmit}
-      >
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              required: true,
-              message: "Enter your email"
-            }
-          ]}
+    <Layout style={{ background: colorBgContainer }}>
+      <Spin spinning={loading} tip="Loading...">
+        <Form
+          className="signin-form"
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 18 }}
+          layout="horizontal"
+          style={{ maxWidth: 500 }}
+          variant="outlined"
+          onFinish={handleSubmit}
         >
-          <Input suffix={<MailOutlined />} />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Enter your password"
-            }
-          ]}
-        >
-          <Input.Password iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
-        </Form.Item>
-        <Typography.Link style={{ display: "flex", justifyContent: "flex-end", marginRight: 50 }} href="/reset-password">
-          Forgot password?
-        </Typography.Link>
-        <Form.Item wrapperCol={{ offset: 10, span: 16 }} style={{ marginTop: 40 }}>
-          <Button type="primary" htmlType="submit" icon={<LoginOutlined />}>
-            Login
-          </Button>
-        </Form.Item>
-      </Form>
-    </Spin>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Enter your email"
+              }
+            ]}
+          >
+            <Input suffix={<MailOutlined />} />
+          </Form.Item>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Enter your password"
+              }
+            ]}
+          >
+            <Input.Password iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
+          </Form.Item>
+          <Typography.Link style={{ display: "flex", justifyContent: "flex-end", marginRight: 50 }} href="/reset-password">
+            Forgot password?
+          </Typography.Link>
+          <Form.Item wrapperCol={{ offset: 10, span: 16 }} style={{ marginTop: 40 }}>
+            <Button type="primary" htmlType="submit" icon={<LoginOutlined />}>
+              Login
+            </Button>
+          </Form.Item>
+        </Form>
+      </Spin>
+    </Layout>
   )
 }
 

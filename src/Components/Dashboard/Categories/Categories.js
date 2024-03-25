@@ -1,4 +1,4 @@
-import { Button, Form, Input, Row, Col, Divider, Spin, message, ColorPicker } from "antd"
+import { Button, Form, Input, Row, Col, Divider, Spin, message, ColorPicker, Layout } from "antd"
 import { useState } from "react"
 import axios from "../../../axios"
 
@@ -14,6 +14,8 @@ const rgbToHex = (r, g, b) => {
 const Categories = () => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+
+  const { Content } = Layout
 
   const onFinish = async (values) => {
     try {
@@ -39,10 +41,7 @@ const Categories = () => {
 
   return (
     <Spin spinning={loading} tip="Loading...">
-      <Form
-        form={form}
-        name="material-form"
-        onFinish={onFinish}
+      <Content
         style={{
           width: "80%",
           margin: "auto",
@@ -52,25 +51,27 @@ const Categories = () => {
           marginTop: "20px"
         }}
       >
-        <Row gutter={24}>
-          <Col span={16}>
-            <Form.Item name="name" label="Name of category" colon={false} rules={[{ required: true, message: "Please input name" }]}>
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="ColorPicker" name="color">
-              <ColorPicker />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Divider />
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Add
-          </Button>
-        </Form.Item>
-      </Form>
+        <Form form={form} name="material-form" onFinish={onFinish}>
+          <Row gutter={24}>
+            <Col span={16}>
+              <Form.Item name="name" label="Name of category" colon={false} rules={[{ required: true, message: "Please input name" }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="ColorPicker" name="color">
+                <ColorPicker />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Divider />
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Add
+            </Button>
+          </Form.Item>
+        </Form>
+      </Content>
     </Spin>
   )
 }

@@ -9,8 +9,9 @@ const AdminAccessComponent = () => {
     if (decodedToken && decodedToken.role === "admin") {
       return <Outlet />
     }
+    return <Navigate to="/home" />
   }
-  return <Navigate to="home" />
+  return <Navigate to="/login" />
 }
 
 export default AdminAccessComponent
