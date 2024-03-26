@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { List, Spin, Button, Space, message, Pagination, Avatar, Carousel, Modal, Layout, Typography, Row } from "antd"
+import { List, Spin, Button, Space, Pagination, Avatar, Carousel, Modal, Layout, Typography, Row, message } from "antd"
 import {
   BankOutlined,
   ClockCircleOutlined,
@@ -17,6 +17,8 @@ const PendingReservations = () => {
   const [reservations, setReservations] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
+
+  const [messageApi, contextHolder] = message.useMessage()
 
   const { Content } = Layout
 
@@ -62,13 +64,13 @@ const PendingReservations = () => {
       .put(`/reservations/state/decision/${item._id}`, { state: 1 })
       .then((res) => {
         console.log(res)
-        message.success(res.data.message)
+        messageApi.success(res.data.message)
         fetchReservations(currentPage)
         setLoading(false)
       })
       .catch((err) => {
         console.log(err)
-        message.error(err.message)
+        messageApi.error(err.message)
         setLoading(false)
       })
   }
@@ -79,13 +81,13 @@ const PendingReservations = () => {
       .put(`/reservations/state/decision/${item._id}`, { state: 0 })
       .then((res) => {
         console.log(res)
-        message.success(res.data.message)
+        messageApi.success(res.data.message)
         fetchReservations(currentPage)
         setLoading(false)
       })
       .catch((err) => {
         console.log(err)
-        message.error(err.message)
+        messageApi.error(err.message)
         setLoading(false)
       })
   }
@@ -96,7 +98,7 @@ const PendingReservations = () => {
       content,
       onOk,
       onCancel() {
-        message.info("Action canceled")
+        messageApi.info("Action canceled")
       },
       okText: "Yes",
       cancelText: "No"
@@ -113,6 +115,7 @@ const PendingReservations = () => {
           marginTop: "20px"
         }}
       >
+        {contextHolder}
         <List
           itemLayout="vertical"
           size="large"

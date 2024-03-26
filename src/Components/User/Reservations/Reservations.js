@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { Spin, Tag, Form, Button, DatePicker, Input, InputNumber, message, Modal, Pagination, Table, Space, theme, Layout } from "antd"
+import { Spin, Tag, Form, Button, DatePicker, Input, InputNumber, Modal, Pagination, Table, Space, theme, Layout, message } from "antd"
 import { CloseCircleOutlined, EditOutlined } from "@ant-design/icons"
 import axios from "../../../axios"
 import dayjs from "dayjs"
@@ -17,6 +17,8 @@ const Reservations = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editReservation, setEditReservation] = useState(null)
   const [reservedDates, setReservedDates] = useState([])
+
+  const [messageApi, contextHolder] = message.useMessage()
 
   const {
     token: { colorBgContainer }
@@ -136,7 +138,7 @@ const Reservations = () => {
         setReservations(data)
         setTotalPages(res.data.totalPages)
         setLoading(false)
-        message.success(res.data.message)
+        messageApi.success(res.data.message)
       })
     } catch (error) {
       console.error(error)
@@ -257,7 +259,7 @@ const Reservations = () => {
         setReservations(data)
         setTotalPages(res.data.totalPages)
         setLoading(false)
-        message.success(res.data.message)
+        messageApi.success(res.data.message)
       })
     } catch (error) {
       console.error(error)
@@ -311,6 +313,7 @@ const Reservations = () => {
   return (
     <Layout style={{ background: colorBgContainer }}>
       <Spin spinning={loading} tip="Loading...">
+        {contextHolder}
         <Table columns={columns} dataSource={reservations} pagination={false} />
         {totalPages > 0 && (
           <div style={{ textAlign: "center", marginTop: "20px" }}>

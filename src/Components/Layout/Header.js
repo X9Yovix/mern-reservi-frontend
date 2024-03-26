@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import PropTypes from "prop-types"
 import { Menu, Switch, message } from "antd"
 import {
   ContactsOutlined,
@@ -10,11 +12,12 @@ import {
   PlusCircleOutlined,
   SunOutlined
 } from "@ant-design/icons"
-import { useEffect, useState } from "react"
-import PropTypes from "prop-types"
 
 const Header = ({ theme, toggleTheme }) => {
   const [current, setCurrent] = useState(null)
+
+  const [messageApi, contextHolder] = message.useMessage()
+
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -28,7 +31,7 @@ const Header = ({ theme, toggleTheme }) => {
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
-    message.success("Logged out successfully")
+    messageApi.success("Logged out successfully")
     navigate("/")
   }
 
@@ -97,8 +100,10 @@ const Header = ({ theme, toggleTheme }) => {
   }
 
   return (
-    <Menu onClick={onClick} defaultSelectedKeys={[current]} selectedKeys={[current]} mode="horizontal" items={filteredItems}>
-      {/* {filteredItems.map((item) => (
+    <>
+      {contextHolder}
+      <Menu onClick={onClick} defaultSelectedKeys={[current]} selectedKeys={[current]} mode="horizontal" items={filteredItems}>
+        {/* {filteredItems.map((item) => (
         item.key !== "logout" && (
           <Menu.Item key={item.key} icon={item.icon}>
             {item.to ? <Link to={item.to}>{item.label}</Link> : item.label}
@@ -127,7 +132,8 @@ const Header = ({ theme, toggleTheme }) => {
           <SunOutlined style={{ color: "orange", fontSize: '16px', marginLeft: "8px" }} />
         )}
       </Menu.Item> */}
-    </Menu>
+      </Menu>
+    </>
   )
 }
 

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button, Form, Input, Layout, Spin, Typography, message, theme } from "antd"
 import { EyeInvisibleOutlined, EyeTwoTone, LoginOutlined, MailOutlined } from "@ant-design/icons"
-import { useNavigate } from "react-router-dom"
 import axios from "../../../axios"
 import "./Signin.css"
 
 const Signin = () => {
   const [loading, setLoading] = useState(false)
+
+  const [messageApi, contextHolder] = message.useMessage()
 
   const {
     token: { colorBgContainer }
@@ -29,7 +31,7 @@ const Signin = () => {
         .then((res) => {
           console.log(res)
           setLoading(false)
-          message.success(res.data.message)
+          messageApi.success(res.data.message)
           localStorage.setItem("token", res.data.token)
           localStorage.setItem("user", JSON.stringify(res.data.user))
           navigate("/dashboard")
@@ -38,10 +40,10 @@ const Signin = () => {
           console.log(err)
           setLoading(false)
           if (err.response.status == 400) {
-            message.error(err.response.data.error)
+            messageApi.error(err.response.data.error)
             return
           }
-          message.error(err.message)
+          messageApi.error(err.message)
         })
     } catch (error) {
       console.error("Error occurred while registering user:", error)
@@ -51,6 +53,7 @@ const Signin = () => {
   return (
     <Layout style={{ background: colorBgContainer }}>
       <Spin spinning={loading} tip="Loading...">
+        {contextHolder}
         <Form
           className="signin-form"
           labelCol={{ span: 4 }}

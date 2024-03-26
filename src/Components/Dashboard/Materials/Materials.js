@@ -1,4 +1,4 @@
-import { Button, Form, Input, Row, Col, InputNumber, Divider, Spin, message, Layout } from "antd"
+import { Button, Form, Input, Row, Col, InputNumber, Divider, Spin, Layout, message } from "antd"
 import { useState } from "react"
 import axios from "../../../axios"
 import TextArea from "antd/es/input/TextArea"
@@ -6,6 +6,8 @@ import TextArea from "antd/es/input/TextArea"
 const Materials = () => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+
+  const [messageApi, contextHolder] = message.useMessage()
 
   const { Content } = Layout
 
@@ -16,7 +18,7 @@ const Materials = () => {
         .post("/materials", values)
         .then((res) => {
           setLoading(false)
-          message.success(res.data.message)
+          messageApi.success(res.data.message)
         })
         .catch((err) => {
           console.log(err)
@@ -29,6 +31,7 @@ const Materials = () => {
 
   return (
     <Spin spinning={loading} tip="Loading...">
+      {contextHolder}
       <Content
         style={{
           width: "80%",

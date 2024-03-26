@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import { Button, Form, Input, Layout, Spin, message, theme } from "antd"
 import { EyeInvisibleOutlined, EyeTwoTone, SyncOutlined } from "@ant-design/icons"
-import { useNavigate, useParams } from "react-router-dom"
 import axios from "../../../axios"
 import "./ResetPasswordVerify.css"
 
 const ResetPasswordVerify = () => {
   const [loading, setLoading] = useState(false)
+
+  const [messageApi, contextHolder] = message.useMessage()
 
   const {
     token: { colorBgContainer }
@@ -28,17 +30,17 @@ const ResetPasswordVerify = () => {
         .then((res) => {
           console.log(res)
           setLoading(false)
-          message.success(res.data.message)
+          messageApi.success(res.data.message)
           navigate("/login")
         })
         .catch((err) => {
           console.log(err)
           setLoading(false)
           if (err.response.status == 400) {
-            message.error(err.response.data.error)
+            messageApi.error(err.response.data.error)
             return
           }
-          message.error(err.message)
+          messageApi.error(err.message)
         })
     } catch (error) {
       console.error("Error occurred while registering user:", error)
@@ -48,6 +50,7 @@ const ResetPasswordVerify = () => {
   return (
     <Layout style={{ background: colorBgContainer }}>
       <Spin spinning={loading} tip="Loading...">
+        {contextHolder}
         <Form
           className="signin-form"
           labelCol={{ span: 8 }}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
-import { Spin, Row, Col, Carousel, Tag, Form, Input, Button, DatePicker, InputNumber, message, Collapse, Typography, Tooltip, Divider } from "antd"
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons"
 import { useParams, useNavigate } from "react-router-dom"
+import { Spin, Row, Col, Carousel, Tag, Form, Input, Button, DatePicker, InputNumber, Collapse, Typography, Tooltip, Divider, message } from "antd"
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons"
 import axios from "../../../axios"
 import "./RoomDetails.css"
 
@@ -12,6 +12,8 @@ const RoomDetails = () => {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)
   const [reservedDates, setReservedDates] = useState([])
+
+  const [messageApi, contextHolder] = message.useMessage()
 
   const [reservationForm] = Form.useForm()
   const params = useParams()
@@ -67,7 +69,7 @@ const RoomDetails = () => {
         .post("/reservations", values)
         .then((res) => {
           console.log(res)
-          message.success(res.data.message)
+          messageApi.success(res.data.message)
           navigate("/home")
         })
         .catch((err) => {
@@ -117,6 +119,7 @@ const RoomDetails = () => {
 
   return (
     <Spin spinning={loading} tip="Loading...">
+      {contextHolder}
       {data && reservedDates && (
         <>
           <Row>

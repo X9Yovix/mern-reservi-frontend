@@ -1,9 +1,9 @@
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
-import { Button, Form, Input, Row, Col, InputNumber, Divider, Space, Modal, Upload, AutoComplete, Spin, message, Select, Tag, Layout } from "antd"
 import { useEffect, useState } from "react"
-import axios from "../../../axios"
 import PropTypes from "prop-types"
+import { Button, Form, Input, Row, Col, InputNumber, Divider, Space, Modal, Upload, AutoComplete, Spin, Select, Tag, Layout, message } from "antd"
 import TextArea from "antd/es/input/TextArea"
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
+import axios from "../../../axios"
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -23,6 +23,8 @@ const MeetingRooms = () => {
   const [selectedMaterials, setSelectedMaterials] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
+
+  const [messageApi, contextHolder] = message.useMessage()
 
   const { Content } = Layout
 
@@ -74,7 +76,7 @@ const MeetingRooms = () => {
     fetchCategories()
     const storedMessage = localStorage.getItem("successMessage")
     if (storedMessage) {
-      message.success(storedMessage)
+      messageApi.success(storedMessage)
       localStorage.removeItem("successMessage")
     }
   }, [])
@@ -198,6 +200,7 @@ const MeetingRooms = () => {
           marginTop: "20px"
         }}
       >
+        {contextHolder}
         <Form form={form} name="meeting-room-form" onFinish={onFinish}>
           <Row gutter={24}>
             <Col span={16}>
