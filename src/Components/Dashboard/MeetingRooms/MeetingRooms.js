@@ -34,7 +34,7 @@ const MeetingRooms = () => {
       await axios
         .get("/materials")
         .then((res) => {
-          setMaterials(res.data.materials.filter((materials) => materials.availableQuantity > 0))
+          setMaterials(res.data.materials.filter((material) => material.availableQuantity > 0 && material.availability === true))
           setLoading(false)
         })
         .catch((err) => {

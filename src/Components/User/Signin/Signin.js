@@ -29,8 +29,6 @@ const Signin = () => {
       await axios
         .post("/auths/login", values)
         .then((res) => {
-          console.log(res)
-          setLoading(false)
           messageApi.success(res.data.message)
           localStorage.setItem("token", res.data.token)
           localStorage.setItem("user", JSON.stringify(res.data.user))
@@ -38,15 +36,12 @@ const Signin = () => {
         })
         .catch((err) => {
           console.log(err)
-          setLoading(false)
-          if (err.response.status == 400) {
-            messageApi.error(err.response.data.error)
-            return
-          }
-          messageApi.error(err.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while registering user:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -63,28 +58,10 @@ const Signin = () => {
           variant="outlined"
           onFinish={handleSubmit}
         >
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              {
-                required: true,
-                message: "Enter your email"
-              }
-            ]}
-          >
+          <Form.Item label="Email" name="email" colon={false} rules={[{ required: true, message: "Enter your email" }]}>
             <Input suffix={<MailOutlined />} />
           </Form.Item>
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Enter your password"
-              }
-            ]}
-          >
+          <Form.Item label="Password" name="password" colon={false} rules={[{ required: true, message: "Enter your password" }]}>
             <Input.Password iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
           </Form.Item>
           <Typography.Link style={{ display: "flex", justifyContent: "flex-end", marginRight: 50 }} href="/reset-password">

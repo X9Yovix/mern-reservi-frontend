@@ -39,14 +39,14 @@ const PendingReservations = () => {
         .then((res) => {
           setReservations(res.data.reservations)
           setTotalPages(res.data.totalPages)
-          setLoading(false)
         })
         .catch((err) => {
           console.log(err)
-          setLoading(false)
         })
     } catch (error) {
       console.error("Error occurred while fetching meeting rooms:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -59,37 +59,43 @@ const PendingReservations = () => {
   }
 
   const confirmReservation = async (item) => {
-    setLoading(true)
-    await axios
-      .put(`/reservations/state/decision/${item._id}`, { state: 1 })
-      .then((res) => {
-        console.log(res)
-        messageApi.success(res.data.message)
-        fetchReservations(currentPage)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.log(err)
-        messageApi.error(err.message)
-        setLoading(false)
-      })
+    try {
+      setLoading(true)
+      await axios
+        .put(`/reservations/state/decision/${item._id}`, { state: 1 })
+        .then((res) => {
+          messageApi.success(res.data.message)
+          fetchReservations(currentPage)
+        })
+        .catch((err) => {
+          console.log(err)
+          messageApi.error(err.response.data.message)
+        })
+    } catch (error) {
+      console.error("Error occurred while confirming reservation:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const declineReservation = async (item) => {
-    setLoading(true)
-    await axios
-      .put(`/reservations/state/decision/${item._id}`, { state: 0 })
-      .then((res) => {
-        console.log(res)
-        messageApi.success(res.data.message)
-        fetchReservations(currentPage)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.log(err)
-        messageApi.error(err.message)
-        setLoading(false)
-      })
+    try {
+      setLoading(true)
+      await axios
+        .put(`/reservations/state/decision/${item._id}`, { state: 0 })
+        .then((res) => {
+          messageApi.success(res.data.message)
+          fetchReservations(currentPage)
+        })
+        .catch((err) => {
+          console.log(err)
+          messageApi.error(err.response.data.message)
+        })
+    } catch (error) {
+      console.error("Error occurred while declining reservation:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const showConfirmModal = (title, content, onOk) => {

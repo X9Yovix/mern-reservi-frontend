@@ -28,22 +28,17 @@ const ResetPasswordVerify = () => {
       await axios
         .post(`/auths/reset-password/reset/${token}`, values)
         .then((res) => {
-          console.log(res)
-          setLoading(false)
           messageApi.success(res.data.message)
           navigate("/login")
         })
         .catch((err) => {
           console.log(err)
-          setLoading(false)
-          if (err.response.status == 400) {
-            messageApi.error(err.response.data.error)
-            return
-          }
-          messageApi.error(err.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while registering user:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -60,28 +55,17 @@ const ResetPasswordVerify = () => {
           variant="filled"
           onFinish={handleSubmit}
         >
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Enter your password"
-              }
-            ]}
-          >
+          <Form.Item label="Password" name="password" colon={false} rules={[{ required: true, message: "Enter your password" }]}>
             <Input.Password iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
           </Form.Item>
           <Form.Item
             label="Confirm Password"
             name="confirm_password"
+            colon={false}
             dependencies={["password"]}
             hasFeedback
             rules={[
-              {
-                required: true,
-                message: "Please confirm your password!"
-              },
+              { required: true, message: "Please confirm your password!" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {

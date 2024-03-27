@@ -30,165 +30,6 @@ const Categories = () => {
   const { Content } = Layout
   const { Title } = Typography
 
-  //Edit section
-
-  const onFinishEdit = async (values) => {
-    try {
-      console.log(values)
-      const { r, g, b } = values.color.metaColor
-      const hexColor = rgbToHex(r, g, b)
-      values.color = hexColor
-      setLoading(true)
-      await axios
-        .put(`categories/${values._id}?page=${currentPage}`, values)
-        .then((res) => {
-          console.log(res)
-          setLoading(false)
-          messageApi.success(res.data.message)
-          setAddModalVisible(false)
-          fetchCategories(currentPage)
-        })
-        .catch((err) => {
-          console.log(err)
-          setLoading(false)
-        })
-    } catch (error) {
-      console.error("Error occurred while saving meeting room:", error)
-    }
-  }
-
-  const handleEditModalCancel = () => {
-    setEditModalVisible(false)
-  }
-
-  const handleEditModalOk = () => {
-    editForm.submit()
-  }
-
-  const handleUpdate = async (id) => {
-    try {
-      await axios
-        .get(`/categories/${id}`)
-        .then((res) => {
-          editForm.resetFields()
-          editForm.setFieldsValue({
-            _id: res.data._id,
-            name: res.data.name,
-            color: new ColorFactory(res.data.color)
-          })
-          setEditModalVisible(true)
-          setLoading(false)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    } catch (error) {
-      console.error("Error occurred while fetching category:", error)
-    }
-  }
-
-  //Add section
-  const handleAddModalCancel = () => {
-    addForm.resetFields(["name", "color"])
-    setAddModalVisible(false)
-  }
-
-  const handleAddModalOk = () => {
-    addForm.submit()
-  }
-
-  const onFinishAdd = async (values) => {
-    try {
-      const { r, g, b } = values.color.metaColor
-      const hexColor = rgbToHex(r, g, b)
-      values.color = hexColor
-      setLoading(true)
-      await axios
-        .post("/categories", values)
-        .then((res) => {
-          messageApi.success(res.data.message)
-          addForm.resetFields(["name", "color"])
-          setAddModalVisible(false)
-          fetchCategories(currentPage)
-          setLoading(false)
-        })
-        .catch((err) => {
-          console.log(err)
-          setLoading(false)
-        })
-    } catch (error) {
-      console.error("Error occurred while saving meeting room:", error)
-    }
-  }
-
-  //Delete section
-  const showConfirmModal = (title, content, onOk) => {
-    Modal.confirm({
-      title,
-      content,
-      onOk,
-      onCancel() {
-        messageApi.info("Action canceled")
-      },
-      okText: "Yes",
-      cancelText: "No"
-    })
-  }
-  const handleDelete = (id) => {
-    const onOk = async () => {
-      try {
-        setLoading(true)
-        await axios
-          .delete(`/categories/${id}`)
-          .then((res) => {
-            console.log(res)
-
-            messageApi.success(res.data.message)
-            fetchCategories(currentPage)
-            setLoading(false)
-          })
-          .catch((err) => {
-            console.log(err)
-            messageApi.error(err.data.message)
-            setLoading(false)
-          })
-      } catch (error) {
-        console.error("Error occurred while deleting category:", error)
-        setLoading(false)
-      }
-    }
-
-    showConfirmModal("Delete Category", "Are you sure you want to delete this category?", onOk)
-  }
-
-  const fetchCategories = async (page) => {
-    try {
-      setLoading(true)
-      await axios
-        .get(`/categories?page=${page}`)
-        .then((res) => {
-          console.log(res)
-          setCategories(res.data.categories)
-          setTotalPages(res.data.totalPages)
-          setLoading(false)
-        })
-        .catch((err) => {
-          console.log(err)
-          setLoading(false)
-        })
-    } catch (error) {
-      console.error("Error occurred while fetching categories:", error)
-    }
-  }
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page)
-  }
-
-  useEffect(() => {
-    fetchCategories(currentPage)
-  }, [currentPage])
-
   const columns = [
     {
       title: "Name",
@@ -216,6 +57,168 @@ const Categories = () => {
       )
     }
   ]
+
+  //fetch
+  const fetchCategories = async (page) => {
+    try {
+      setLoading(true)
+      await axios
+        .get(`/categories/method/pagination?page=${page}`)
+        .then((res) => {
+          setCategories(res.data.categories)
+          setTotalPages(res.data.totalPages)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    } catch (error) {
+      console.error("Error occurred while fetching categories:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+  }
+
+  useEffect(() => {
+    fetchCategories(currentPage)
+  }, [currentPage])
+
+  //edit
+  const onFinishEdit = async (values) => {
+    try {
+      setLoading(true)
+      const { r, g, b } = values.color.metaColor
+      const hexColor = rgbToHex(r, g, b)
+      values.color = hexColor
+
+      await axios
+        .put(`categories/${values._id}`, {
+          name: values.name,
+          color: values.color
+        })
+        .then((res) => {
+          messageApi.success(res.data.message)
+          setEditModalVisible(false)
+          fetchCategories(currentPage)
+        })
+        .catch((err) => {
+          console.log(err)
+          messageApi.error(err.response.data.message)
+        })
+    } catch (error) {
+      console.error("Error occurred while updating meeting room:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEditModalCancel = () => {
+    setEditModalVisible(false)
+  }
+
+  const handleEditModalOk = () => {
+    editForm.submit()
+  }
+
+  const handleUpdate = async (id) => {
+    try {
+      setLoading(true)
+      await axios
+        .get(`/categories/${id}`)
+        .then((res) => {
+          editForm.resetFields()
+          editForm.setFieldsValue({
+            _id: res.data._id,
+            name: res.data.name,
+            color: new ColorFactory(res.data.color)
+          })
+          setEditModalVisible(true)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    } catch (error) {
+      console.error("Error occurred while fetching category:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  //add
+  const handleAddModalCancel = () => {
+    addForm.resetFields(["name", "color"])
+    setAddModalVisible(false)
+  }
+
+  const handleAddModalOk = () => {
+    addForm.submit()
+  }
+
+  const onFinishAdd = async (values) => {
+    try {
+      setLoading(true)
+      const { r, g, b } = values.color.metaColor
+      const hexColor = rgbToHex(r, g, b)
+      values.color = hexColor
+
+      await axios
+        .post("/categories", values)
+        .then((res) => {
+          addForm.resetFields()
+          setAddModalVisible(false)
+          fetchCategories(currentPage)
+          messageApi.success(res.data.message)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    } catch (error) {
+      console.error("Error occurred while saving categorie:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  //delete
+  const showConfirmModal = (title, content, onOk) => {
+    Modal.confirm({
+      title,
+      content,
+      onOk,
+      onCancel() {
+        messageApi.info("Action canceled")
+      },
+      okText: "Yes",
+      cancelText: "No"
+    })
+  }
+  const handleDelete = (id) => {
+    const onOk = async () => {
+      try {
+        setLoading(true)
+        await axios
+          .delete(`/categories/${id}`)
+          .then((res) => {
+            messageApi.success(res.data.message)
+            fetchCategories(currentPage)
+            setLoading(false)
+          })
+          .catch((err) => {
+            console.log(err)
+            messageApi.error(err.response.data.message)
+          })
+      } catch (error) {
+        console.error("Error occurred while deleting category:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    showConfirmModal("Delete Category", "Are you sure you want to delete this category?", onOk)
+  }
 
   return (
     <Spin spinning={loading} tip="Loading...">
@@ -252,7 +255,7 @@ const Categories = () => {
           <Form form={addForm} name="add-category-form" onFinish={onFinishAdd}>
             <Row gutter={24}>
               <Col span={24}>
-                <Form.Item name="name" label="Name of category" colon={false} rules={[{ required: true, message: "Please input name" }]}>
+                <Form.Item name="name" label="Name" colon={false} rules={[{ required: true, message: "Please input name" }]}>
                   <Input />
                 </Form.Item>
               </Col>
@@ -269,7 +272,7 @@ const Categories = () => {
             <Form form={editForm} name="edit-category-form" onFinish={onFinishEdit}>
               <Row gutter={24}>
                 <Col span={24}>
-                  <Form.Item name="name" label="Name of category" colon={false} rules={[{ required: true, message: "Please input name" }]}>
+                  <Form.Item name="name" label="Name" colon={false} rules={[{ required: true, message: "Please input name" }]}>
                     <Input />
                   </Form.Item>
                 </Col>

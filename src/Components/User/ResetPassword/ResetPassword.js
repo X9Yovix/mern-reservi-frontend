@@ -29,21 +29,16 @@ const ResetPassword = () => {
       await axios
         .post("/auths/reset-password/request", values)
         .then((res) => {
-          console.log(res)
-          setLoading(false)
           messageApi.success(res.data.message)
         })
         .catch((err) => {
           console.log(err)
-          setLoading(false)
-          if (err.response.status == 400) {
-            messageApi.error(err.response.data.error)
-            return
-          }
-          messageApi.error(err.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while registering user:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -60,16 +55,7 @@ const ResetPassword = () => {
           variant="filled"
           onFinish={handleSubmit}
         >
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              {
-                required: true,
-                message: "Enter your email"
-              }
-            ]}
-          >
+          <Form.Item label="Email" name="email" colon={false} rules={[{ required: true, message: "Enter your email" }]}>
             <Input suffix={<MailOutlined />} />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 14, span: 16 }}>
