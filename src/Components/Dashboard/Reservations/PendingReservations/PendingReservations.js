@@ -64,12 +64,12 @@ const PendingReservations = () => {
       await axios
         .put(`/reservations/state/decision/${item._id}`, { state: 1 })
         .then((res) => {
-          messageApi.success(res.data.message)
           fetchReservations(currentPage)
+          messageApi.success(res.data.message)
         })
         .catch((err) => {
           console.log(err)
-          messageApi.error(err.response.data.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while confirming reservation:", error)
@@ -84,12 +84,12 @@ const PendingReservations = () => {
       await axios
         .put(`/reservations/state/decision/${item._id}`, { state: 0 })
         .then((res) => {
-          messageApi.success(res.data.message)
           fetchReservations(currentPage)
+          messageApi.success(res.data.message)
         })
         .catch((err) => {
           console.log(err)
-          messageApi.error(err.response.data.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while declining reservation:", error)

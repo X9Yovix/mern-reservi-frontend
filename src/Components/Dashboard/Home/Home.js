@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import { Badge, Calendar, Select, Spin, Layout, Row, Typography, Col, Switch, Space, Divider } from "antd"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, registerables } from "chart.js"
-import MaterialAvailabilityChart from "./MaterialAvailabilityChart"
-import MeetingRoomCategoriesChart from "./MeetingRoomCategoriesChart"
-import ReservationsOverTimeChart from "./ReservationsOverTimeChart"
+import MaterialAvailabilityChart from "./Charts/MaterialAvailabilityChart"
+import MeetingRoomCategoriesChart from "./Charts/MeetingRoomCategoriesChart"
+import ReservationsOverTimeChart from "./Charts/ReservationsOverTimeChart"
+import CardsChart from "./Charts/CardsChart"
 import { AnimatePresence, motion } from "framer-motion"
 import axios from "../../../axios"
 import "./Home.css"
-import CardsChart from "./CardsChart"
 
 const variants = {
   open: { height: "auto", opacity: 1, transition: { duration: 0.6 } },
@@ -31,123 +31,114 @@ const Home = () => {
   const { Title, Text } = Typography
 
   const fetchCategories = async () => {
-    setLoading(true)
     try {
+      setLoading(true)
       await axios
         .get("/categories")
-        .then((response) => {
-          setCategories(response.data.categories)
-          setLoading(false)
+        .then((res) => {
+          setCategories(res.data.categories)
         })
-        .catch((error) => {
-          console.error("Error fetching categories:", error)
-          setLoading(false)
+        .catch((err) => {
+          console.error("Error fetching categories:", err)
         })
     } catch (error) {
       console.error("Error fetching categories:", error)
+    } finally {
       setLoading(false)
     }
   }
 
   const fetchRooms = async () => {
-    setLoading(true)
     try {
+      setLoading(true)
       await axios
         .get("/meeting_rooms")
-        .then((response) => {
-          const data = response.data.meeting_rooms.map((room) => ({
+        .then((res) => {
+          const data = res.data.meeting_rooms.map((room) => ({
             value: room._id,
             label: room.name
           }))
           setRooms(data)
-          setLoading(false)
         })
-        .catch((error) => {
-          console.error("Error fetching meeting rooms:", error)
-          setLoading(false)
+        .catch((err) => {
+          console.error("Error fetching meeting rooms:", err)
         })
     } catch (error) {
       console.error("Error fetching meeting rooms:", error)
+    } finally {
       setLoading(false)
     }
   }
 
   const fetchMaterials = async () => {
-    setLoading(true)
     try {
+      setLoading(true)
       await axios
         .get("/materials")
-        .then((response) => {
-          setMaterials(response.data.materials)
-          console.log(response.data.materials)
-          setLoading(false)
+        .then((res) => {
+          setMaterials(res.data.materials)
         })
-        .catch((error) => {
-          console.error("Error fetching meeting rooms:", error)
-          setLoading(false)
+        .catch((err) => {
+          console.error("Error fetching meeting rooms:", err)
         })
     } catch (error) {
       console.error("Error fetching meeting rooms:", error)
+    } finally {
       setLoading(false)
     }
   }
 
   const fetchMeetingRooms = async () => {
-    setLoading(true)
     try {
+      setLoading(true)
       await axios
         .get("/meeting_rooms")
-        .then((response) => {
-          console.log(response)
-          setMeetingRooms(response.data.meeting_rooms)
-          setLoading(false)
+        .then((res) => {
+          setMeetingRooms(res.data.meeting_rooms)
         })
-        .catch((error) => {
-          console.error("Error fetching meeting_rooms:", error)
-          setLoading(false)
+        .catch((err) => {
+          console.error("Error fetching meeting_rooms:", err)
         })
     } catch (error) {
       console.error("Error fetching meeting_rooms:", error)
+    } finally {
       setLoading(false)
     }
   }
 
   const fetchReservations = async () => {
-    setLoading(true)
     try {
+      setLoading(true)
       await axios
         .get("/reservations")
-        .then((response) => {
-          console.log(response)
-          setReservations(response.data.reservations)
-          setLoading(false)
+        .then((res) => {
+          setReservations(res.data.reservations)
         })
-        .catch((error) => {
-          console.error("Error fetching meeting_rooms:", error)
-          setLoading(false)
+        .catch((err) => {
+          console.error("Error fetching meeting_rooms:", err)
         })
     } catch (error) {
       console.error("Error fetching meeting_rooms:", error)
+    } finally {
       setLoading(false)
     }
   }
 
   const fetchReservedDates = async (roomId) => {
-    setLoading(true)
     try {
+      setLoading(true)
       await axios
         .get(`/reservations/${roomId}`)
-        .then((response) => {
-          setReservedDates(response.data.reservations)
+        .then((res) => {
+          setReservedDates(res.data.reservations)
           setRoom(roomId)
-          setLoading(false)
         })
-        .catch((error) => {
-          console.error("Error fetching reserved dates:", error)
-          setLoading(false)
+        .catch((err) => {
+          console.error("Error fetching reserved dates:", err)
         })
     } catch (error) {
       console.error("Error fetching reserved dates:", error)
+    } finally {
       setLoading(false)
     }
   }
@@ -240,6 +231,7 @@ const Home = () => {
     if (info.type === "month") return monthCellRender(current)
     return info.originNode
   }
+
   return (
     <Spin spinning={loading} tip="Loading...">
       <Content
@@ -278,7 +270,8 @@ const Home = () => {
                 defaultValue={room}
                 onSelect={handleRoomChange}
                 style={{ width: 150 }}
-                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+                filterSort={(optionA, optionB) => (optionA?.label ?? "").toLowerCase().localeCompare((optionB?.label ?? "").toLowerCase())}
                 options={rooms}
               />
             </div>

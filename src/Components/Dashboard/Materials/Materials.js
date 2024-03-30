@@ -68,7 +68,7 @@ const Materials = () => {
         .get(`/materials/method/pagination?page=${page}`)
         .then((res) => {
           setMaterials(res.data.materials)
-          setTotalPages(res.data.totalPages)
+          setTotalPages(res.data.total_pages)
         })
         .catch((err) => {
           console.log(err)
@@ -129,13 +129,13 @@ const Materials = () => {
           description: values.description
         })
         .then((res) => {
-          messageApi.success(res.data.message)
           setEditModalVisible(false)
           fetchMaterials(currentPage)
+          messageApi.success(res.data.message)
         })
         .catch((err) => {
           console.log(err)
-          messageApi.error(err.response.data.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while updating material:", error)
@@ -150,12 +150,12 @@ const Materials = () => {
       await axios
         .put(`/materials/state/${id}`, { availability: checked })
         .then((res) => {
-          messageApi.success(res.data.message)
           fetchMaterials(currentPage)
+          messageApi.success(res.data.message)
         })
         .catch((err) => {
           console.log(err)
-          messageApi.error(err.response.data.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while updating availability:", error)
@@ -216,12 +216,12 @@ const Materials = () => {
           .delete(`/materials/${id}`)
           .then((res) => {
             console.log(res)
-            messageApi.success(res.data.message)
             fetchMaterials(currentPage)
+            messageApi.success(res.data.message)
           })
           .catch((err) => {
             console.log(err)
-            messageApi.error(err.response.data.message)
+            messageApi.error(err.response.data.error)
           })
       } catch (error) {
         console.error("Error occurred while deleting material:", error)

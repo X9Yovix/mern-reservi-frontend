@@ -1,6 +1,24 @@
 import { useEffect, useState } from "react"
 import PropTypes from "prop-types"
-import { Button, Form, Input, Row, Col, InputNumber, Divider, Space, Modal, Upload, AutoComplete, Spin, Select, Tag, Layout, message } from "antd"
+import {
+  Button,
+  Form,
+  Input,
+  Row,
+  Col,
+  InputNumber,
+  Divider,
+  Space,
+  Modal,
+  Upload,
+  AutoComplete,
+  Spin,
+  Select,
+  Tag,
+  Layout,
+  message,
+  Typography
+} from "antd"
 import TextArea from "antd/es/input/TextArea"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import axios from "../../../axios"
@@ -27,6 +45,7 @@ const MeetingRooms = () => {
   const [messageApi, contextHolder] = message.useMessage()
 
   const { Content } = Layout
+  const { Title } = Typography
 
   const fetchMaterials = async () => {
     try {
@@ -35,14 +54,14 @@ const MeetingRooms = () => {
         .get("/materials")
         .then((res) => {
           setMaterials(res.data.materials.filter((material) => material.availableQuantity > 0 && material.availability === true))
-          setLoading(false)
         })
         .catch((err) => {
           console.log(err)
-          setLoading(false)
         })
     } catch (error) {
       console.error("Error occurred while fetching materials:", error)
+    } finally {
+      setLoading(false)
     }
   }
   const fetchCategories = async () => {
@@ -60,25 +79,20 @@ const MeetingRooms = () => {
             })
           })
           setCategories(categories)
-          setLoading(false)
         })
         .catch((err) => {
           console.log(err)
-          setLoading(false)
         })
     } catch (error) {
       console.error("Error occurred while fetching materials:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     fetchMaterials()
     fetchCategories()
-    const storedMessage = localStorage.getItem("successMessage")
-    if (storedMessage) {
-      messageApi.success(storedMessage)
-      localStorage.removeItem("successMessage")
-    }
   }, [])
 
   const tagRender = (props) => {
@@ -175,16 +189,19 @@ const MeetingRooms = () => {
           }
         })
         .then((res) => {
-          setLoading(false)
-          localStorage.setItem("successMessage", res.data.message)
-          window.location.reload()
+          messageApi.success(res.data.message)
+          form.resetFields()
+          setFileList([])
+          setSelectedMaterials([])
         })
         .catch((err) => {
           console.log(err)
-          setLoading(false)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while saving meeting room:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -195,244 +212,269 @@ const MeetingRooms = () => {
           width: "80%",
           margin: "auto",
           padding: "10px",
-          /* border: "1px solid #ccc",
-          borderRadius: "10px", */
           marginTop: "20px"
         }}
       >
         {contextHolder}
-        <Form form={form} name="meeting-room-form" onFinish={onFinish}>
-          <Row gutter={24}>
-            <Col span={16}>
-              <Form.Item name="name" label="Name of the room" colon={false} rules={[{ required: true, message: "Please input name" }]}>
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="capacity"
-                label="Capacity of the room"
-                colon={false}
-                rules={[
-                  { required: true, message: "Please input capacity" },
-                  { type: "number", min: 1, message: "Capacity must be a positive number" }
-                ]}
-              >
-                <InputNumber min={1} placeholder="Capacity" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Divider />
-          <Row>
-            <Col span={24}>
-              <Form.Item name="description" label="Description" colon={false}>
-                <TextArea placeholder="Description" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Divider />
-          <Row>
-            <Col span={24}>
-              <Form.Item label="Dimensions of the room" colon={false} required={true}>
-                <Space.Compact size="middle">
-                  <Form.Item
-                    noStyle
-                    style={{ marginBottom: 0 }}
-                    name="length"
-                    rules={[
-                      { required: true, message: "Please input length" },
-                      { type: "number", min: 1, message: "Length must be a positive number" }
-                    ]}
-                  >
-                    <InputNumber min={1} style={{ width: "50%" }} placeholder="Length" />
-                  </Form.Item>
-                  <Form.Item
-                    noStyle
-                    style={{ marginBottom: 0 }}
-                    name="width"
-                    rules={[
-                      { required: true, message: "Please input width" },
-                      { type: "number", min: 1, message: "Width must be a positive number" }
-                    ]}
-                  >
-                    <InputNumber min={1} style={{ width: "50%" }} placeholder="Width" />
-                  </Form.Item>
-                  <Form.Item
-                    noStyle
-                    style={{ marginBottom: 0 }}
-                    name="height"
-                    rules={[
-                      { required: true, message: "Please input height" },
-                      { type: "number", min: 1, message: "Height must be a positive number" }
-                    ]}
-                  >
-                    <InputNumber min={1} style={{ width: "50%" }} placeholder="Height" />
-                  </Form.Item>
-                </Space.Compact>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Divider />
-          <Form.Item name="categories" label="Categories" colon={false} rules={[{ required: true, message: "Please select at least one category" }]}>
-            <Select
-              mode="multiple"
-              style={{
-                width: "100%"
-              }}
-              placeholder="Select category"
-              optionLabelProp="label"
-              options={categories}
-              tagRender={(props) => tagRender(props)}
-            />
-          </Form.Item>
-          <Divider />
-          <Row>
-            <Col span={24}>
-              <Form.List
-                name="materials"
-                rules={[
-                  {
-                    validator: async (_, materials) => {
-                      if (!materials || materials.length < 2) {
-                        return Promise.reject(new Error("Select at least 2 materials"))
+        <Row>
+          <Col span={12} style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+            <Title level={4} style={{ margin: 0 }}>
+              Add Meeting room
+            </Title>
+          </Col>
+        </Row>
+        <Divider />
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+            marginTop: "20px"
+          }}
+        >
+          <Form form={form} name="meeting-room-form" onFinish={onFinish}>
+            <Row gutter={24}>
+              <Col span={8}>
+                <Form.Item name="name" label="Name" colon={false} rules={[{ required: true, message: "Name is required" }]}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item
+                  labelCol={{
+                    span: 10
+                  }}
+                  wrapperCol={{
+                    span: 10
+                  }}
+                  name="capacity"
+                  label="Capacity"
+                  colon={false}
+                  rules={[
+                    { required: true, message: "Capacity is required" },
+                    { type: "number", min: 1, message: "Capacity must be a positive number" }
+                  ]}
+                >
+                  <InputNumber min={1} />
+                </Form.Item>
+              </Col>
+              <Col span={10}>
+                <Form.Item label="Dimensions" colon={false} required={true}>
+                  <Space.Compact size="middle">
+                    <Form.Item
+                      noStyle
+                      style={{ marginBottom: 0 }}
+                      name="length"
+                      rules={[
+                        { required: true, message: "Length is required" },
+                        { type: "number", min: 1, message: "Length must be a positive number" }
+                      ]}
+                    >
+                      <InputNumber min={1} style={{ width: "50%" }} placeholder="Length" />
+                    </Form.Item>
+                    <Form.Item
+                      noStyle
+                      style={{ marginBottom: 0 }}
+                      name="width"
+                      rules={[
+                        { required: true, message: "Width is required" },
+                        { type: "number", min: 1, message: "Width must be a positive number" }
+                      ]}
+                    >
+                      <InputNumber min={1} style={{ width: "50%" }} placeholder="Width" />
+                    </Form.Item>
+                    <Form.Item
+                      noStyle
+                      style={{ marginBottom: 0 }}
+                      name="height"
+                      rules={[
+                        { required: true, message: "Height is required" },
+                        { type: "number", min: 1, message: "Height must be a positive number" }
+                      ]}
+                    >
+                      <InputNumber min={1} style={{ width: "50%" }} placeholder="Height" />
+                    </Form.Item>
+                  </Space.Compact>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Divider />
+            <Row>
+              <Col span={24}>
+                <Form.Item name="description" label="Description" colon={false}>
+                  <TextArea />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Divider />
+            <Form.Item
+              name="categories"
+              label="Categories"
+              colon={false}
+              rules={[{ required: true, message: "Please select at least one category" }]}
+            >
+              <Select
+                mode="multiple"
+                style={{
+                  width: "100%"
+                }}
+                placeholder="Select category"
+                optionLabelProp="label"
+                filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+                filterSort={(optionA, optionB) => (optionA?.label ?? "").toLowerCase().localeCompare((optionB?.label ?? "").toLowerCase())}
+                options={categories}
+                tagRender={(props) => tagRender(props)}
+              />
+            </Form.Item>
+            <Divider />
+            <Row>
+              <Col span={24}>
+                <Form.List
+                  name="materials"
+                  rules={[
+                    {
+                      validator: async (_, materials) => {
+                        if (!materials || materials.length < 2) {
+                          return Promise.reject(new Error("Select at least 2 materials"))
+                        }
                       }
                     }
-                  }
-                ]}
-              >
-                {(fields, { add, remove }, { errors }) => (
-                  <>
-                    {fields.map((field, index) => (
-                      <Form.Item
-                        labelCol={{ span: 24 }}
-                        label={index === 0 ? "Materials" : ""}
-                        required={true}
-                        key={field.key}
-                        style={{ marginBottom: 15 }}
-                      >
-                        <Row gutter={8}>
-                          <Col flex="auto">
-                            <Form.Item
-                              {...field}
-                              name={[field.name, "name"]}
-                              key={[field.key, "key"]}
-                              validateTrigger={["onChange", "onBlur"]}
-                              rules={[
-                                {
-                                  required: true,
-                                  whitespace: true,
-                                  message: "Missing material name or delete this field"
-                                },
-                                {
-                                  validator: async (_, value) => {
-                                    const optionExists = materials.some((material) => material.name === value)
-                                    if (!optionExists) {
-                                      return Promise.reject(new Error("Please select a valid material"))
-                                    }
-                                    return Promise.resolve()
-                                  }
-                                }
-                              ]}
-                              style={{ marginBottom: 0 }}
-                            >
-                              <AutoComplete
-                                allowClear
-                                options={materials
-                                  .filter((material) => !selectedMaterials.some((selected) => selected.name === material.name))
-                                  .map((material) => ({
-                                    value: material.name,
-                                    label: `${material.name} (${material.availableQuantity})`
-                                  }))}
-                                onSelect={(value) => {
-                                  const selectedMaterial = materials.find((material) => material.name === value)
-                                  if (selectedMaterial && selectedMaterial != "") {
-                                    const fieldKey = field.key
-                                    if (selectedMaterials.some((material) => material.fieldKey === fieldKey)) {
-                                      const indexToRemove = selectedMaterials.findIndex((material) => material.fieldKey === fieldKey)
-                                      if (indexToRemove !== -1) {
-                                        selectedMaterials.splice(indexToRemove, 1)
+                  ]}
+                >
+                  {(fields, { add, remove }, { errors }) => (
+                    <>
+                      {fields.map((field, index) => (
+                        <Form.Item
+                          labelCol={{ span: 24 }}
+                          label={index === 0 ? "Materials" : ""}
+                          required={true}
+                          key={field.key}
+                          style={{ marginBottom: 15 }}
+                        >
+                          <Row gutter={8}>
+                            <Col flex="auto">
+                              <Form.Item
+                                {...field}
+                                name={[field.name, "name"]}
+                                key={[field.key, "key"]}
+                                validateTrigger={["onChange", "onBlur"]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    whitespace: true,
+                                    message: "Missing material name or delete this field"
+                                  },
+                                  {
+                                    validator: async (_, value) => {
+                                      const optionExists = materials.some((material) => material.name === value)
+                                      if (!optionExists) {
+                                        return Promise.reject(new Error("Please select a valid material"))
                                       }
+                                      return Promise.resolve()
                                     }
-                                    setSelectedMaterials([...selectedMaterials, { ...selectedMaterial, fieldKey }])
-                                    console.log("------onSelect-----")
-                                    console.log("selected field.key", field.key)
-                                    console.log("selectedMaterials", JSON.stringify(selectedMaterials))
-                                    console.log("-----------")
+                                  }
+                                ]}
+                                style={{ marginBottom: 0 }}
+                              >
+                                <AutoComplete
+                                  allowClear
+                                  options={materials
+                                    .filter((material) => !selectedMaterials.some((selected) => selected.name === material.name))
+                                    .map((material) => ({
+                                      value: material.name,
+                                      label: `${material.name} (${material.availableQuantity})`
+                                    }))}
+                                  onSelect={(value) => {
+                                    const selectedMaterial = materials.find((material) => material.name === value)
+                                    if (selectedMaterial && selectedMaterial != "") {
+                                      const fieldKey = field.key
+                                      if (selectedMaterials.some((material) => material.fieldKey === fieldKey)) {
+                                        const indexToRemove = selectedMaterials.findIndex((material) => material.fieldKey === fieldKey)
+                                        if (indexToRemove !== -1) {
+                                          selectedMaterials.splice(indexToRemove, 1)
+                                        }
+                                      }
+                                      setSelectedMaterials([...selectedMaterials, { ...selectedMaterial, fieldKey }])
+                                    }
+                                  }}
+                                  placeholder="Material name"
+                                  filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+                                  filterSort={(optionA, optionB) =>
+                                    (optionA?.label ?? "").toLowerCase().localeCompare((optionB?.label ?? "").toLowerCase())
+                                  }
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col flex="none">
+                              <Form.Item
+                                name={[field.name, "quantity"]}
+                                style={{ marginBottom: 0 }}
+                                rules={[{ required: true, message: "Missing quantity" }]}
+                              >
+                                <InputNumber min={1} placeholder="Quantity" />
+                              </Form.Item>
+                            </Col>
+                            <Col flex="none">
+                              <MinusCircleOutlined
+                                className="dynamic-delete-button"
+                                onClick={() => {
+                                  const indexToRemove = selectedMaterials.findIndex((material) => material.fieldKey === field.key)
+                                  if (indexToRemove !== -1) {
+                                    selectedMaterials.splice(indexToRemove, 1)
+                                    remove(field.name)
+                                  } else {
+                                    remove(field.name)
                                   }
                                 }}
-                                placeholder="Material name"
                               />
-                            </Form.Item>
-                          </Col>
-                          <Col flex="none">
-                            <Form.Item
-                              name={[field.name, "quantity"]}
-                              rules={[{ required: true, message: "Missing quantity" }]}
-                              style={{ marginBottom: 0 }}
-                            >
-                              <InputNumber min={1} placeholder="Quantity" />
-                            </Form.Item>
-                          </Col>
-                          <Col flex="none">
-                            <MinusCircleOutlined
-                              className="dynamic-delete-button"
-                              onClick={() => {
-                                const indexToRemove = selectedMaterials.findIndex((material) => material.fieldKey === field.key)
-                                console.log(indexToRemove)
-                                if (indexToRemove !== -1) {
-                                  selectedMaterials.splice(indexToRemove, 1)
-                                  remove(field.name)
-                                } else {
-                                  remove(field.name)
-                                }
-                              }}
-                            />
-                          </Col>
-                        </Row>
-                      </Form.Item>
-                    ))}
+                            </Col>
+                          </Row>
+                        </Form.Item>
+                      ))}
 
-                    <Form.Item>
-                      <Button type="dashed" onClick={() => add()} style={{ width: "100%" }} icon={<PlusOutlined />}>
-                        Add Material
-                      </Button>
-                      <Form.ErrorList errors={errors} />
-                    </Form.Item>
-                  </>
-                )}
-              </Form.List>
-            </Col>
-          </Row>
-          <Divider />
-          <Row>
-            <Col span={24}>
-              <Upload
-                listType="picture-card"
-                fileList={fileList}
-                onPreview={handlePreview}
-                onChange={handleChange}
-                beforeUpload={() => false}
-                accept="image/*"
-              >
-                {fileList.length >= 8 ? null : uploadButton}
-              </Upload>
-              <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
-                <img
-                  alt="example"
-                  style={{
-                    width: "100%"
-                  }}
-                  src={previewImage}
-                />
-              </Modal>
-            </Col>
-          </Row>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Add
-            </Button>
-          </Form.Item>
-        </Form>
+                      <Form.Item>
+                        <Button type="dashed" onClick={() => add()} style={{ width: "100%" }} icon={<PlusOutlined />}>
+                          Add Material
+                        </Button>
+                        <Form.ErrorList errors={errors} />
+                      </Form.Item>
+                    </>
+                  )}
+                </Form.List>
+              </Col>
+            </Row>
+            <Divider />
+            <Row>
+              <Col span={24}>
+                <Upload
+                  listType="picture-card"
+                  fileList={fileList}
+                  onPreview={handlePreview}
+                  onChange={handleChange}
+                  beforeUpload={() => false}
+                  accept="image/*"
+                >
+                  {fileList.length >= 8 ? null : uploadButton}
+                </Upload>
+                <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+                  <img
+                    alt="example"
+                    style={{
+                      width: "100%"
+                    }}
+                    src={previewImage}
+                  />
+                </Modal>
+              </Col>
+            </Row>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Add
+              </Button>
+            </Form.Item>
+          </Form>
+        </Layout>
       </Content>
     </Spin>
   )

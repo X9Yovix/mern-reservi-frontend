@@ -62,7 +62,12 @@ const Dashboard = ({ cmp }) => {
 
   return (
     <>
-      <Layout style={{ background: colorBgContainer }}>
+      <Layout
+        style={{
+          background: colorBgContainer,
+          minHeight: "95vh"
+        }}
+      >
         <Sider style={{ background: colorBgContainer }}>
           <Menu
             onClick={onClick}

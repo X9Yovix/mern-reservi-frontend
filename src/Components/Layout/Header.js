@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import PropTypes from "prop-types"
-import { Menu, Switch, message } from "antd"
+import { Avatar, Menu, Switch, Tooltip, message } from "antd"
 import {
   ContactsOutlined,
   DashboardOutlined,
@@ -10,8 +10,11 @@ import {
   LogoutOutlined,
   MoonOutlined,
   PlusCircleOutlined,
-  SunOutlined
+  SunOutlined,
+  UserOutlined
 } from "@ant-design/icons"
+import { jwtDecode } from "jwt-decode"
+import "./Header.css"
 
 const Header = ({ theme, toggleTheme }) => {
   const [current, setCurrent] = useState(null)
@@ -87,13 +90,40 @@ const Header = ({ theme, toggleTheme }) => {
         </>
       ),
       key: "theme"
+    },
+    {
+      label: (
+        <Tooltip
+          title={
+            localStorage.getItem("user")
+              ? `${JSON.parse(localStorage.getItem("user")).first_name} ${JSON.parse(localStorage.getItem("user")).last_name}`
+              : null
+          }
+        >
+          <Avatar
+            style={{ backgroundColor: "#87d068" }}
+            src={
+              localStorage.getItem("user") ? `${process.env.REACT_APP_BACKEND_STATIC_URL}${JSON.parse(localStorage.getItem("user")).avatar}` : null
+            }
+            icon={!localStorage.getItem("user") ? <UserOutlined /> : null}
+          />
+        </Tooltip>
+      ),
+      key: "avatar"
     }
   ]
 
-  const isAuthenticated = localStorage.getItem("token")
-  const filteredItems = isAuthenticated
-    ? items.filter((item) => ["dashboard", "home", "reservations", "logout", "theme"].includes(item.key))
-    : items.filter((item) => ["login", "register", "theme"].includes(item.key))
+  const token = localStorage.getItem("token")
+  const decodedToken = token ? jwtDecode(token) : null
+  let filteredItems = []
+
+  if (!token) {
+    filteredItems = items.filter((item) => ["login", "register", "theme"].includes(item.key))
+  } else if (decodedToken && decodedToken.role === "admin") {
+    filteredItems = items.filter((item) => ["dashboard", "home", "reservations", "logout", "theme", "avatar"].includes(item.key))
+  } else if (decodedToken && decodedToken.role === "user") {
+    filteredItems = items.filter((item) => ["home", "reservations", "logout", "theme", "avatar"].includes(item.key))
+  }
 
   const onClick = (e) => {
     setCurrent(e.key)
@@ -102,37 +132,18 @@ const Header = ({ theme, toggleTheme }) => {
   return (
     <>
       {contextHolder}
-      <Menu onClick={onClick} defaultSelectedKeys={[current]} selectedKeys={[current]} mode="horizontal" items={filteredItems}>
-        {/* {filteredItems.map((item) => (
-        item.key !== "logout" && (
-          <Menu.Item key={item.key} icon={item.icon}>
-            {item.to ? <Link to={item.to}>{item.label}</Link> : item.label}
-          </Menu.Item>
-        )
-      ))}
-
-      {filteredItems.map((item) => (
-        item.key === "logout" && (
-          <Menu.Item key={item.key} icon={item.icon} style={{ marginLeft: "auto" }}>
-            {item.label}
-          </Menu.Item>
-        )
-      ))}
-
-      <Menu.Item key="theme" onClick={() => setCurrent(current)} >
-        <Switch
-          checked={theme === "dark"}
-          onChange={toggleTheme}
-          checkedChildren="Dark"
-          unCheckedChildren="Light"
-        />
-        {theme === "dark" ? (
-          <MoonOutlined style={{ color: "#1668dc", fontSize: '16px', marginLeft: "8px" }} />
-        ) : (
-          <SunOutlined style={{ color: "orange", fontSize: '16px', marginLeft: "8px" }} />
-        )}
-      </Menu.Item> */}
-      </Menu>
+      <Menu
+        onClick={onClick}
+        defaultSelectedKeys={[current]}
+        selectedKeys={[current]}
+        mode="horizontal"
+        items={filteredItems}
+        style={{
+          minHeight: "5vh",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5"
+        }}
+      />
     </>
   )
 }

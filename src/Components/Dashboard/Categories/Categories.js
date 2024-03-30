@@ -100,13 +100,13 @@ const Categories = () => {
           color: values.color
         })
         .then((res) => {
-          messageApi.success(res.data.message)
           setEditModalVisible(false)
           fetchCategories(currentPage)
+          messageApi.success(res.data.message)
         })
         .catch((err) => {
           console.log(err)
-          messageApi.error(err.response.data.message)
+          messageApi.error(err.response.data.error)
         })
     } catch (error) {
       console.error("Error occurred while updating meeting room:", error)
@@ -202,13 +202,12 @@ const Categories = () => {
         await axios
           .delete(`/categories/${id}`)
           .then((res) => {
-            messageApi.success(res.data.message)
             fetchCategories(currentPage)
-            setLoading(false)
+            messageApi.success(res.data.message)
           })
           .catch((err) => {
             console.log(err)
-            messageApi.error(err.response.data.message)
+            messageApi.error(err.response.data.error)
           })
       } catch (error) {
         console.error("Error occurred while deleting category:", error)

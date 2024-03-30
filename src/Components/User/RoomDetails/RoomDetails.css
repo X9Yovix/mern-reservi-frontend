@@ -8,8 +8,13 @@
   line-height: 30px;
 }
 
-/* CSS for disabled fields */
 .ant-picker-cell-disabled .ant-picker-cell-inner {
   opacity: 0.5;
   pointer-events: none;
+}
+
+.list-materials {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
