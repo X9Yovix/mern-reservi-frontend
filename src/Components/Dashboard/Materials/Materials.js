@@ -75,7 +75,6 @@ const Materials = () => {
         })
     } catch (error) {
       console.error("Error occurred while fetching materials:", error)
-      setLoading(false)
     } finally {
       setLoading(false)
     }
@@ -99,7 +98,6 @@ const Materials = () => {
           editForm.resetFields()
           editForm.setFieldsValue(res.data)
           setEditModalVisible(true)
-          setLoading(false)
         })
         .catch((err) => {
           console.log(err)
@@ -230,7 +228,7 @@ const Materials = () => {
       }
     }
 
-    showConfirmModal("Delete Category", "Are you sure you want to delete this material?", onOk)
+    showConfirmModal("Delete Material", "Are you sure you want to delete this material?", onOk)
   }
 
   return (
@@ -258,13 +256,21 @@ const Materials = () => {
         </Row>
 
         <Divider />
-        <Table columns={columns} dataSource={materials.map((material) => ({ ...material, key: material._id }))} pagination={false} />
-        {totalPages > 0 && (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
-          </div>
-        )}
-
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5"
+          }}
+        >
+          <Table columns={columns} dataSource={materials.map((material) => ({ ...material, key: material._id }))} pagination={false} />
+          {totalPages > 0 && (
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
+            </div>
+          )}
+        </Layout>
         <Modal title="Add Material" open={addModalVisible} onCancel={handleAddModalCancel} onOk={handleAddModalOk} confirmLoading={loading}>
           <Form form={addForm} name="add-material-form" onFinish={onFinishAdd}>
             <Row gutter={24}>

@@ -242,92 +242,152 @@ const Home = () => {
           marginTop: "20px"
         }}
       >
-        <Row style={{ paddingBottom: 20 }}>
-          <Col span={24}>
-            <Title level={3}>Number of each element</Title>
-          </Col>
-          <Col span={24}>
-            {meetingRooms.length > 0 && (
-              <CardsChart
-                rooms={meetingRooms.length}
-                users={meetingRooms.length}
-                materials={materials.length}
-                categories={categories.length}
-                reservations={reservations.length}
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+            marginTop: "20px"
+          }}
+        >
+          <Row style={{ paddingBottom: 20 }}>
+            <Col span={24}>
+              <Title level={3} style={{ margin: 0, paddingBottom: "20px" }}>
+                Number of each element
+              </Title>
+            </Col>
+            <Col span={24}>
+              {meetingRooms.length > 0 && (
+                <CardsChart
+                  rooms={meetingRooms.length}
+                  users={meetingRooms.length}
+                  materials={materials.length}
+                  categories={categories.length}
+                  reservations={reservations.length}
+                />
+              )}
+            </Col>
+          </Row>
+        </Layout>
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+            marginTop: "20px"
+          }}
+        >
+          <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
+            <Title level={3} style={{ margin: 0, paddingBottom: "20px" }}>
+              Reservations Calendar
+            </Title>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Text style={{ marginRight: "10px", marginBottom: "0" }}>Select room to view reserved dates</Text>
+                <Select
+                  showSearch
+                  defaultValue={room}
+                  onSelect={handleRoomChange}
+                  style={{ width: 150 }}
+                  filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+                  filterSort={(optionA, optionB) => (optionA?.label ?? "").toLowerCase().localeCompare((optionB?.label ?? "").toLowerCase())}
+                  options={rooms}
+                />
+              </div>
+            </Col>
+            <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Switch
+                checkedChildren="Hide the calendar"
+                unCheckedChildren="Show the calendar"
+                defaultChecked={false}
+                onClick={() => {
+                  setIsOpen((isOpen) => !isOpen)
+                }}
               />
-            )}
-          </Col>
-        </Row>
-        <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
-          <Title level={3}>Reservations Calendar</Title>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Text style={{ marginRight: "10px", marginBottom: "0" }}>Select room to view reserved dates</Text>
-              <Select
-                showSearch
-                defaultValue={room}
-                onSelect={handleRoomChange}
-                style={{ width: 150 }}
-                filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
-                filterSort={(optionA, optionB) => (optionA?.label ?? "").toLowerCase().localeCompare((optionB?.label ?? "").toLowerCase())}
-                options={rooms}
-              />
-            </div>
-          </Col>
-          <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Switch
-              checkedChildren="Hide the calendar"
-              unCheckedChildren="Show the calendar"
-              defaultChecked={false}
-              onClick={() => {
-                setIsOpen((isOpen) => !isOpen)
-              }}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                className="calendar-container"
-                variants={variants}
-                initial="closed"
-                animate="open"
-                exit="closed"
-                style={{ overflow: "hidden" }}
-              >
-                <Col>
-                  <Divider />
-                  <Space size={"large"}>
-                    <Badge status="success" text="Confirmed" />
-                    <Badge status="processing" text="Pending" />
-                    <Badge status="error" text="Rejected" />
-                    <Badge status="warning" text="Canceled" />
-                  </Space>
-                </Col>
-                <Col>{room !== "Select a room" && <Calendar cellRender={cellRender} />}</Col>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Row>
-        <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
-          <Title level={3}>Materials Availability</Title>
-          {materials.length > 0 && <MaterialAvailabilityChart materials={materials} />}
-        </Row>
-        <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
-          <Col span={24}>
-            <Title level={3}>Meeting Room Categories Distribution</Title>
-            {meetingRooms.length > 0 && <MeetingRoomCategoriesChart meetingRooms={meetingRooms} />}
-          </Col>
-        </Row>
-        <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
-          <Col span={24}>
-            <Title level={3}>Reservations Over Time</Title>
-            {reservations.length > 0 && <ReservationsOverTimeChart reservations={reservations} />}
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+          <Row>
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  className="calendar-container"
+                  variants={variants}
+                  initial="closed"
+                  animate="open"
+                  exit="closed"
+                  style={{ overflow: "hidden" }}
+                >
+                  <Col style={{ marginBottom: 15 }}>
+                    <Divider />
+                    <Space size={"large"}>
+                      <Badge status="success" text="Confirmed" />
+                      <Badge status="processing" text="Pending" />
+                      <Badge status="error" text="Rejected" />
+                      <Badge status="warning" text="Canceled" />
+                    </Space>
+                  </Col>
+                  <Col>{room !== "Select a room" && <Calendar cellRender={cellRender} />}</Col>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Row>
+        </Layout>
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+            marginTop: "20px"
+          }}
+        >
+          <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
+            <Title level={3} style={{ margin: 0, paddingBottom: "20px" }}>
+              Materials Availability
+            </Title>
+            {materials.length > 0 && <MaterialAvailabilityChart materials={materials} />}
+          </Row>
+        </Layout>
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+            marginTop: "20px"
+          }}
+        >
+          <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
+            <Col span={24}>
+              <Title level={3} style={{ margin: 0, paddingBottom: "20px" }}>
+                Meeting Room Categories Distribution
+              </Title>
+              {meetingRooms.length > 0 && <MeetingRoomCategoriesChart meetingRooms={meetingRooms} />}
+            </Col>
+          </Row>
+        </Layout>
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+            marginTop: "20px"
+          }}
+        >
+          <Row style={{ paddingTop: 20, paddingBottom: 20 }}>
+            <Col span={24}>
+              <Title level={3} style={{ margin: 0, paddingBottom: "20px" }}>
+                Confirmed Reservations Over Time
+              </Title>
+              {reservations.length > 0 && <ReservationsOverTimeChart reservations={reservations} />}
+            </Col>
+          </Row>
+        </Layout>
       </Content>
     </Spin>
   )

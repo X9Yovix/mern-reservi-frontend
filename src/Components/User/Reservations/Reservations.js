@@ -187,6 +187,7 @@ const Reservations = () => {
     const reservation_message = localStorage.getItem("reservation_message")
     if (reservation_message) {
       messageApi.success(reservation_message)
+      localStorage.removeItem("reservation_message")
     }
   }, [currentPage])
 
@@ -300,7 +301,7 @@ const Reservations = () => {
   const handleCancelRequest = async (reservationId) => {
     try {
       setLoading(true)
-      await axios.put(`reservations/user/cancel/${reservationId}?page=${currentPage}`).then((res) => {
+      await axios.put(`/reservations/state/decision/${reservationId}`, { state: 2 }).then((res) => {
         fetchUserReservations(currentPage)
         messageApi.success(res.data.message)
       })

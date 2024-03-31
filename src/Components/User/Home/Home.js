@@ -57,8 +57,7 @@ const Home = () => {
           style={{
             width: "80%",
             margin: "auto",
-            padding: "10px",
-            marginTop: "20px"
+            padding: "10px"
           }}
         >
           <Title style={{ textAlign: "center", marginBottom: "10px" }}>Meeting Rooms</Title>
@@ -70,7 +69,7 @@ const Home = () => {
           >
             {meetingRooms.map((meetingRoom, index) => (
               <Col span={8} key={index}>
-                <div style={{ padding: "30px" }}>
+                <div style={{ padding: "20px" }}>
                   <Card bordered={true} className="room-card">
                     <Carousel autoplay>
                       {meetingRoom.images.map((image, index) => (
@@ -83,6 +82,10 @@ const Home = () => {
                         </div>
                       ))}
                     </Carousel>
+                    <Title level={5} style={{ textAlign: "center", margin: "10px 0 0 0" }}>
+                      {" "}
+                      {meetingRoom.name}{" "}
+                    </Title>
                     <Meta
                       description={
                         <Link to={`/rooms/details/${meetingRoom._id}`} className="room-link">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { List, Spin, Button, Space, Pagination, Avatar, Carousel, Modal, Layout, Typography, Row, message } from "antd"
+import { List, Spin, Button, Space, Pagination, Col, Avatar, Carousel, Modal, Layout, Typography, Row, message, Divider } from "antd"
 import {
   BankOutlined,
   ClockCircleOutlined,
@@ -21,6 +21,7 @@ const PendingReservations = () => {
   const [messageApi, contextHolder] = message.useMessage()
 
   const { Content } = Layout
+  const { Title } = Typography
 
   const { Paragraph, Text } = Typography
 
@@ -38,7 +39,7 @@ const PendingReservations = () => {
         .get(`/reservations/state/pendings?page=${page}`)
         .then((res) => {
           setReservations(res.data.reservations)
-          setTotalPages(res.data.totalPages)
+          setTotalPages(res.data.total_pages)
         })
         .catch((err) => {
           console.log(err)
@@ -122,128 +123,146 @@ const PendingReservations = () => {
         }}
       >
         {contextHolder}
-        <List
-          itemLayout="vertical"
-          size="large"
-          dataSource={reservations}
-          renderItem={(item) => (
-            <List.Item
-              style={{ borderBottom: "1px solid #dbd8d8" }}
-              key={item._id}
-              extra={
-                <Carousel style={{ width: "200px", marginTop: "15px" }}>
-                  {item.meeting_rooms.images &&
-                    item.meeting_rooms.images.map((image, index) => (
-                      <div key={index}>
-                        <img alt={`${image}-${index}`} src={`${process.env.REACT_APP_BACKEND_STATIC_URL}${image}`} style={{ width: "100%" }} />
-                      </div>
-                    ))}
-                </Carousel>
-              }
-              actions={[
-                <Space key={1} style={{ marginLeft: "10px", padding: "5px" }}>
-                  <Button
-                    className="confirm-btn"
-                    icon={<LikeOutlined />}
-                    onClick={() =>
-                      showConfirmModal("Confirm Reservation", "Are you sure to confirm this reservation?", () => confirmReservation(item))
-                    }
-                  >
-                    Confirm
-                  </Button>
-                  <Button
-                    className="decline-btn"
-                    icon={<DislikeOutlined />}
-                    onClick={() =>
-                      showConfirmModal("Decline Reservation", "Are you sure to decline this reservation?", () => declineReservation(item))
-                    }
-                  >
-                    Decline
-                  </Button>
-                </Space>
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <>
-                    {item.users.avatar != "" ? (
-                      <Avatar src={`${process.env.REACT_APP_BACKEND_STATIC_URL}${item.users.avatar}`} />
-                    ) : (
-                      <Avatar icon={<UserOutlined />} />
-                    )}
-                    <span style={{ opacity: "0.7", marginLeft: "10px" }}>
-                      {item.users && item.users.first_name} {item.users && item.users.last_name}
-                    </span>
-                  </>
+        <Row>
+          <Col span={24}>
+            <Title level={4} style={{ margin: 0 }}>
+              List of Reservations
+            </Title>
+          </Col>
+        </Row>
+        <Divider />
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+            marginTop: "20px"
+          }}
+        >
+          <List
+            itemLayout="vertical"
+            size="large"
+            dataSource={reservations}
+            renderItem={(item) => (
+              <List.Item
+                style={{ borderBottom: "1px solid #dbd8d8" }}
+                key={item._id}
+                extra={
+                  <Carousel style={{ width: "200px", marginTop: "15px" }}>
+                    {item.meeting_rooms.images &&
+                      item.meeting_rooms.images.map((image, index) => (
+                        <div key={index}>
+                          <img alt={`${image}-${index}`} src={`${process.env.REACT_APP_BACKEND_STATIC_URL}${image}`} style={{ width: "100%" }} />
+                        </div>
+                      ))}
+                  </Carousel>
                 }
-                description={
-                  <>
-                    <Row>
-                      <BankOutlined style={{ marginRight: 8, marginBottom: 15 }} />
-                      <Paragraph>
-                        Room:{" "}
-                        <Text style={{ opacity: "0.9" }} strong>
-                          {item.meeting_rooms.name}
-                        </Text>
-                      </Paragraph>
-                    </Row>
-                    <Row>
-                      <ScheduleOutlined style={{ marginRight: 8, marginBottom: 15 }} />
-                      <Paragraph>
-                        Participants:{" "}
-                        <Text style={{ opacity: "0.9" }} strong>
-                          {item.participants}
-                        </Text>
-                      </Paragraph>
-                    </Row>
-                    <Row>
-                      <ClockCircleOutlined style={{ marginRight: 8, marginBottom: 15 }} />
-                      <Paragraph>
-                        Reservation:{" "}
-                        <Text style={{ opacity: "0.9" }} strong>
-                          {new Date(item.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} -{" "}
-                          {new Date(item.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-                        </Text>
-                      </Paragraph>
-                    </Row>
-                    <Row>
-                      <InfoCircleOutlined style={{ marginRight: 8, marginBottom: 15 }} />
-                      <Paragraph>
-                        Additional Info:{" "}
-                        {item.additional_info ? (
+                actions={[
+                  <Space key={1} style={{ marginLeft: "10px", padding: "5px" }}>
+                    <Button
+                      className="confirm-btn"
+                      icon={<LikeOutlined />}
+                      onClick={() =>
+                        showConfirmModal("Confirm Reservation", "Are you sure to confirm this reservation?", () => confirmReservation(item))
+                      }
+                    >
+                      Confirm
+                    </Button>
+                    <Button
+                      className="decline-btn"
+                      icon={<DislikeOutlined />}
+                      onClick={() =>
+                        showConfirmModal("Decline Reservation", "Are you sure to decline this reservation?", () => declineReservation(item))
+                      }
+                    >
+                      Decline
+                    </Button>
+                  </Space>
+                ]}
+              >
+                <List.Item.Meta
+                  title={
+                    <>
+                      {item.users.avatar != "" ? (
+                        <Avatar src={`${process.env.REACT_APP_BACKEND_STATIC_URL}${item.users.avatar}`} />
+                      ) : (
+                        <Avatar icon={<UserOutlined />} />
+                      )}
+                      <span style={{ opacity: "0.7", marginLeft: "10px" }}>
+                        {item.users && item.users.first_name} {item.users && item.users.last_name}
+                      </span>
+                    </>
+                  }
+                  description={
+                    <>
+                      <Row>
+                        <BankOutlined style={{ marginRight: 8, marginBottom: 15 }} />
+                        <Paragraph>
+                          Room:{" "}
                           <Text style={{ opacity: "0.9" }} strong>
-                            {item.additional_info.length > 80 ? (
-                              <>
-                                {item.additional_info.slice(0, 80) + "..."}
-                                <span
-                                  style={{ color: "#1890ff", cursor: "pointer", marginLeft: "10px" }}
-                                  onClick={() => handleSeeMore(item.additional_info)}
-                                >
-                                  See more
-                                </span>
-                              </>
-                            ) : (
-                              <>{item.additional_info}</>
-                            )}
+                            {item.meeting_rooms.name}
                           </Text>
-                        ) : (
+                        </Paragraph>
+                      </Row>
+                      <Row>
+                        <ScheduleOutlined style={{ marginRight: 8, marginBottom: 15 }} />
+                        <Paragraph>
+                          Participants:{" "}
                           <Text style={{ opacity: "0.9" }} strong>
-                            No additional information provided
+                            {item.participants}
                           </Text>
-                        )}
-                      </Paragraph>
-                    </Row>
-                  </>
-                }
-              />
-            </List.Item>
+                        </Paragraph>
+                      </Row>
+                      <Row>
+                        <ClockCircleOutlined style={{ marginRight: 8, marginBottom: 15 }} />
+                        <Paragraph>
+                          Reservation:{" "}
+                          <Text style={{ opacity: "0.9" }} strong>
+                            {new Date(item.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} -{" "}
+                            {new Date(item.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                          </Text>
+                        </Paragraph>
+                      </Row>
+                      <Row>
+                        <InfoCircleOutlined style={{ marginRight: 8, marginBottom: 15 }} />
+                        <Paragraph>
+                          Additional Info:{" "}
+                          {item.additional_info ? (
+                            <Text style={{ opacity: "0.9" }} strong>
+                              {item.additional_info.length > 80 ? (
+                                <>
+                                  {item.additional_info.slice(0, 80) + "..."}
+                                  <span
+                                    style={{ color: "#1890ff", cursor: "pointer", marginLeft: "10px" }}
+                                    onClick={() => handleSeeMore(item.additional_info)}
+                                  >
+                                    See more
+                                  </span>
+                                </>
+                              ) : (
+                                <>{item.additional_info}</>
+                              )}
+                            </Text>
+                          ) : (
+                            <Text style={{ opacity: "0.9" }} strong>
+                              No additional information provided
+                            </Text>
+                          )}
+                        </Paragraph>
+                      </Row>
+                    </>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+          {totalPages > 0 && (
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
+            </div>
           )}
-        />
-        {totalPages > 0 && (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
-          </div>
-        )}
+        </Layout>
       </Content>
     </Spin>
   )

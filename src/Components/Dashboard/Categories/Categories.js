@@ -66,7 +66,7 @@ const Categories = () => {
         .get(`/categories/method/pagination?page=${page}`)
         .then((res) => {
           setCategories(res.data.categories)
-          setTotalPages(res.data.totalPages)
+          setTotalPages(res.data.total_pages)
         })
         .catch((err) => {
           console.log(err)
@@ -243,13 +243,21 @@ const Categories = () => {
           </Col>
         </Row>
         <Divider />
-        <Table columns={columns} dataSource={categories.map((category) => ({ ...category, key: category._id }))} pagination={false} />
-        {totalPages > 0 && (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
-          </div>
-        )}
-
+        <Layout
+          style={{
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5"
+          }}
+        >
+          <Table columns={columns} dataSource={categories.map((category) => ({ ...category, key: category._id }))} pagination={false} />
+          {totalPages > 0 && (
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <Pagination current={currentPage} total={totalPages * 10} onChange={handlePageChange} />
+            </div>
+          )}
+        </Layout>
         <Modal title="Add Category" open={addModalVisible} onCancel={handleAddModalCancel} onOk={handleAddModalOk} confirmLoading={loading}>
           <Form form={addForm} name="add-category-form" onFinish={onFinishAdd}>
             <Row gutter={24}>

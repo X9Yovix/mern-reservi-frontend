@@ -21,7 +21,7 @@ import {
 } from "antd"
 import TextArea from "antd/es/input/TextArea"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
-import axios from "../../../axios"
+import axios from "../../../../axios"
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ const getBase64 = (file) =>
     reader.onerror = (error) => reject(error)
   })
 
-const MeetingRooms = () => {
+const AddMeetingRoom = () => {
   const [form] = Form.useForm()
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState("")
@@ -229,8 +229,7 @@ const MeetingRooms = () => {
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             padding: "20px",
             borderRadius: "10px",
-            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
-            marginTop: "20px"
+            background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5"
           }}
         >
           <Form form={form} name="meeting-room-form" onFinish={onFinish}>
@@ -480,11 +479,11 @@ const MeetingRooms = () => {
   )
 }
 
-MeetingRooms.propTypes = {
+AddMeetingRoom.propTypes = {
   label: PropTypes.string,
   value: PropTypes.string,
   closable: PropTypes.bool,
   onClose: PropTypes.func,
   color: PropTypes.string
 }
-export default MeetingRooms
+export default AddMeetingRoom

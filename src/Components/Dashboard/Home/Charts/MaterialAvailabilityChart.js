@@ -34,7 +34,7 @@ const MaterialAvailabilityChart = ({ materials }) => {
         stacked: true
       },
       y: {
-        stacked: true
+        stacked: false
       }
     }
   }

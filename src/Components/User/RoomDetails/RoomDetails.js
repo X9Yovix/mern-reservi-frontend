@@ -43,7 +43,7 @@ const RoomDetails = () => {
     expandable: false,
     symbol: "...",
     suffix: (
-      <Button type="link" onClick={showModal}>
+      <Button key="btn-more" type="link" onClick={showModal}>
         more
       </Button>
     )
@@ -277,130 +277,132 @@ const RoomDetails = () => {
                   />
                 </Col>
               </Row>
-              <Row
-                style={{
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  padding: "20px",
-                  borderRadius: "10px",
-                  background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
-                  marginTop: "20px"
-                }}
-              >
-                <Col span={24}>
-                  <Title level={3} style={{ margin: 0 }}>
-                    Reservation Form
-                  </Title>
-                  <Form
-                    form={reservationForm}
-                    name="reservation-form"
-                    onFinish={onFinish}
-                    layout="horizontal"
-                    style={{ marginTop: "15px" }}
-                    disabled={data.meeting_room.availability ? false : true}
-                  >
-                    <Row>
-                      <Col span={5}>
-                        <Form.Item
-                          name="participants"
-                          label="Number of Participants"
-                          colon={false}
-                          rules={[
-                            { required: true, message: "Number of participants is required" },
-                            { type: "number", min: 1, message: "Number of participants must be at least 1" },
-                            () => ({
-                              validator(_, value) {
-                                if (value && value > data.meeting_room.capacity) {
-                                  return Promise.reject(`Number of participants cannot exceed ${data.meeting_room.capacity}`)
-                                }
-                                return Promise.resolve()
-                              }
-                            })
-                          ]}
-                        >
-                          <InputNumber min={1} />
-                        </Form.Item>
-                      </Col>
-                      <Col span={10}>
-                        <Form.Item
-                          labelCol={{
-                            span: 10
-                          }}
-                          wrapperCol={{
-                            span: 12
-                          }}
-                          name="reservation_range"
-                          label="Reservation Date & Time"
-                          colon={false}
-                          rules={[
-                            { required: true, message: "Please select reservation date and time" },
-                            ({ getFieldValue }) => ({
-                              validator() {
-                                const selectedDates = getFieldValue("reservation_range")
-                                if (!selectedDates || !selectedDates[0] || !selectedDates[1]) {
+              {data.meeting_room.availability ? (
+                <Row
+                  style={{
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    background: localStorage.getItem("theme") === "dark" ? "#1a1a24" : "#f0f2f5",
+                    marginTop: "20px"
+                  }}
+                >
+                  <Col span={24}>
+                    <Title level={3} style={{ margin: 0 }}>
+                      Reservation Form
+                    </Title>
+                    <Form
+                      form={reservationForm}
+                      name="reservation-form"
+                      onFinish={onFinish}
+                      layout="horizontal"
+                      style={{ marginTop: "15px" }}
+                      //disabled={data.meeting_room.availability ? false : true}
+                    >
+                      <Row>
+                        <Col span={5}>
+                          <Form.Item
+                            name="participants"
+                            label="Number of Participants"
+                            colon={false}
+                            rules={[
+                              { required: true, message: "Number of participants is required" },
+                              { type: "number", min: 1, message: "Number of participants must be at least 1" },
+                              () => ({
+                                validator(_, value) {
+                                  if (value && value > data.meeting_room.capacity) {
+                                    return Promise.reject(`Number of participants cannot exceed ${data.meeting_room.capacity}`)
+                                  }
                                   return Promise.resolve()
                                 }
-                                const selectedRange = [selectedDates[0].toDate(), selectedDates[1].toDate()]
+                              })
+                            ]}
+                          >
+                            <InputNumber min={1} />
+                          </Form.Item>
+                        </Col>
+                        <Col span={10}>
+                          <Form.Item
+                            labelCol={{
+                              span: 10
+                            }}
+                            wrapperCol={{
+                              span: 12
+                            }}
+                            name="reservation_range"
+                            label="Reservation Date & Time"
+                            colon={false}
+                            rules={[
+                              { required: true, message: "Please select reservation date and time" },
+                              ({ getFieldValue }) => ({
+                                validator() {
+                                  const selectedDates = getFieldValue("reservation_range")
+                                  if (!selectedDates || !selectedDates[0] || !selectedDates[1]) {
+                                    return Promise.resolve()
+                                  }
+                                  const selectedRange = [selectedDates[0].toDate(), selectedDates[1].toDate()]
 
-                                for (const reservation of reservedDates) {
-                                  const startDate = new Date(reservation.start_date)
-                                  const endDate = new Date(reservation.end_date)
+                                  for (const reservation of reservedDates) {
+                                    const startDate = new Date(reservation.start_date)
+                                    const endDate = new Date(reservation.end_date)
 
-                                  if (
-                                    (selectedRange[0] >= startDate && selectedRange[0] <= endDate) ||
-                                    (selectedRange[1] >= startDate && selectedRange[1] <= endDate) ||
-                                    (selectedRange[0] <= startDate && selectedRange[1] >= endDate)
-                                  ) {
-                                    if (reservation.status === "pending" || reservation.status === "confirmed") {
-                                      return Promise.reject("Selected date range is overlapping with an existing reservation")
+                                    if (
+                                      (selectedRange[0] >= startDate && selectedRange[0] <= endDate) ||
+                                      (selectedRange[1] >= startDate && selectedRange[1] <= endDate) ||
+                                      (selectedRange[0] <= startDate && selectedRange[1] >= endDate)
+                                    ) {
+                                      if (reservation.status === "pending" || reservation.status === "confirmed") {
+                                        return Promise.reject("Selected date range is overlapping with an existing reservation")
+                                      }
                                     }
                                   }
+                                  return Promise.resolve()
                                 }
-                                return Promise.resolve()
-                              }
-                            })
-                          ]}
-                        >
-                          <RangePicker
-                            cellRender={cellRender}
-                            disabledDate={(current) => {
-                              const reservationsFiltered = reservedDates.filter(
-                                (reservation) => reservation.status !== "rejected" && reservation.status !== "canceled"
-                              )
-                              for (const reservation of reservationsFiltered) {
-                                const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
-                                const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
-                                if (current && new Date(current.$d) >= startDate && new Date(current.$d) <= endDate) {
+                              })
+                            ]}
+                          >
+                            <RangePicker
+                              cellRender={cellRender}
+                              disabledDate={(current) => {
+                                const reservationsFiltered = reservedDates.filter(
+                                  (reservation) => reservation.status !== "rejected" && reservation.status !== "canceled"
+                                )
+                                for (const reservation of reservationsFiltered) {
+                                  const startDate = new Date(reservation.start_date).setHours(0, 0, 0, 0)
+                                  const endDate = new Date(reservation.end_date).setHours(0, 0, 0, 0)
+                                  if (current && new Date(current.$d) >= startDate && new Date(current.$d) <= endDate) {
+                                    return true
+                                  }
+                                }
+                                //const today = new Date().setHours(0, 0, 0, 0)
+                                const today = new Date()
+                                if (current < today) {
                                   return true
                                 }
-                              }
-                              //const today = new Date().setHours(0, 0, 0, 0)
-                              const today = new Date()
-                              if (current < today) {
-                                return true
-                              }
-                              return false
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={9}>
-                        <Form.Item ame="additional_info" label="Additional Information" colon={false}>
-                          <TextArea rows={1} />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col span={24}>
-                        <Form.Item style={{ textAlign: "center", marginTop: "10px" }}>
-                          <Button htmlType="submit" icon={<SubnodeOutlined />}>
-                            Submit Reservation
-                          </Button>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Col>
-              </Row>
+                                return false
+                              }}
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={9}>
+                          <Form.Item ame="additional_info" label="Additional Information" colon={false}>
+                            <TextArea rows={1} />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={24}>
+                          <Form.Item style={{ textAlign: "center", marginTop: "10px" }}>
+                            <Button htmlType="submit" icon={<SubnodeOutlined />}>
+                              Submit Reservation
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </Col>
+                </Row>
+              ) : null}
             </>
           )}
         </Content>

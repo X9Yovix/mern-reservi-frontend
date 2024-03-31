@@ -9,7 +9,8 @@ import Home from "./Components/User/Home/Home"
 import ResetPassword from "./Components/User/ResetPassword/ResetPassword"
 import ResetPasswordVerify from "./Components/User/ResetPasswordVerify/ResetPasswordVerify"
 import AdminAccessComponent from "./Components/Utils/AdminAccessComponent"
-import MeetingRooms from "./Components/Dashboard/MeetingRooms/MeetingRooms"
+import AddMeetingRoom from "./Components/Dashboard/MeetingRooms/AddMeetingRoom/AddMeetingRoom"
+import ListMeetingRooms from "./Components/Dashboard/MeetingRooms/ListMeetingRooms/ListMeetingRooms"
 import Dashboard from "./Components/Dashboard/Dashboard"
 import Materials from "./Components/Dashboard/Materials/Materials"
 import Categories from "./Components/Dashboard/Categories/Categories"
@@ -61,7 +62,8 @@ function App() {
               <Route path="home" element={<Dashboard cmp={<HomeDashboard />} />} />
               <Route path="materials" element={<Dashboard cmp={<Materials />} />} />
               <Route path="categories" element={<Dashboard cmp={<Categories />} />} />
-              <Route path="meeting-rooms" element={<Dashboard cmp={<MeetingRooms />} />} />
+              <Route path="meeting-rooms/add" element={<Dashboard cmp={<AddMeetingRoom />} />} />
+              <Route path="meeting-rooms/list" element={<Dashboard cmp={<ListMeetingRooms />} />} />
               <Route path="reservations" element={<Dashboard cmp={<PendingReservations />} />} />
             </Route>
           </Routes>

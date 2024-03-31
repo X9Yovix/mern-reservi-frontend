@@ -23,7 +23,19 @@ const items = [
     label: "Meeting Rooms",
     key: "3",
     icon: <AppstoreOutlined />,
-    to: "/dashboard/meeting-rooms"
+    children: [
+      {
+        label: "Add Meeting Room",
+        key: "3-1",
+        to: "/dashboard/meeting-rooms/add"
+      },
+      {
+        label: "List Meeting Rooms",
+        key: "3-2",
+        to: "/dashboard/meeting-rooms/list"
+      }
+    ]
+    //to: "/dashboard/meeting-rooms"
   },
   {
     label: "Reservations",
@@ -42,22 +54,61 @@ const Dashboard = ({ cmp }) => {
   const [current, setCurrent] = useState(null)
   const navigate = useNavigate()
   const location = useLocation()
+
   const {
     token: { colorBgContainer }
   } = theme.useToken()
+
   useEffect(() => {
-    const activeItem = items.find((item) => location.pathname.startsWith(item.to))
+    const activeItem = findActiveItem(items, location.pathname)
     if (activeItem) {
       setCurrent(activeItem.key)
     }
   }, [location.pathname])
 
+  const findActiveItem = (items, pathname) => {
+    for (const item of items) {
+      if (pathname.startsWith(item.to)) {
+        return item
+      }
+      if (item.children) {
+        const activeChildItem = findActiveItem(item.children, pathname)
+        if (activeChildItem) {
+          return activeChildItem
+        }
+      }
+    }
+    return null
+  }
+
   const onClick = (e) => {
     setCurrent(e.key)
-    const selectedItem = items.find((item) => item.key === e.key)
+    const selectedItem = findItemByKey(items, e.key)
     if (selectedItem) {
-      navigate(selectedItem.to)
+      if (selectedItem.to) {
+        navigate(selectedItem.to)
+      } else if (selectedItem.children) {
+        const firstChildItem = selectedItem.children[0]
+        if (firstChildItem) {
+          navigate(firstChildItem.to)
+        }
+      }
     }
+  }
+
+  const findItemByKey = (items, key) => {
+    for (const item of items) {
+      if (item.key === key) {
+        return item
+      }
+      if (item.children) {
+        const foundItem = findItemByKey(item.children, key)
+        if (foundItem) {
+          return foundItem
+        }
+      }
+    }
+    return null
   }
 
   return (
