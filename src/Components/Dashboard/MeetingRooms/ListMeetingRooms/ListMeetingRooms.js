@@ -119,7 +119,6 @@ const ListMeetingRooms = () => {
         .get(`/meeting_rooms/method/pagination?page=${page}&pageSize=10`)
         .then((res) => {
           setMeetingRooms(res.data.meeting_rooms)
-          console.log(res.data)
           setTotalPages(res.data.total_pages)
         })
         .catch((err) => {
@@ -172,7 +171,8 @@ const ListMeetingRooms = () => {
   const handleUpdate = (id) => {
     navigate(`/dashboard/meeting-rooms/update/${id}`)
   }
-  //Delete section
+
+  //delete
   const showConfirmModal = (title, content, onOk) => {
     Modal.confirm({
       title,
@@ -188,9 +188,8 @@ const ListMeetingRooms = () => {
   const handleDelete = (id) => {
     const onOk = async () => {
       try {
-        console.log(id)
         setLoading(true)
-        /* await axios
+        await axios
           .delete(`/meeting_rooms/${id}`)
           .then((res) => {
             fetchMeetingRooms(currentPage)
@@ -199,14 +198,13 @@ const ListMeetingRooms = () => {
           .catch((err) => {
             console.log(err)
             messageApi.error(err.response.data.error)
-          }) */
+          })
       } catch (error) {
         console.error("Error occurred while deleting meeting room:", error)
       } finally {
         setLoading(false)
       }
     }
-
     showConfirmModal("Delete Meeting Room", "Are you sure you want to delete this meeting room?", onOk)
   }
 

@@ -20,6 +20,7 @@ import Reservations from "./Components/User/Reservations/Reservations"
 import HomeDashboard from "./Components/Dashboard/Home/Home"
 import NotFound from "./Components/Shared/NotFound/NotFound"
 import UpdateMeetingRoom from "./Components/Dashboard/MeetingRooms/UpdateMeetingRoom/UpdateMeetingRoom"
+import Archive from "./Components/Dashboard/Archive/Archive"
 import "./App.css"
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
               <Route path="meeting-rooms/list" element={<Dashboard cmp={<ListMeetingRooms />} />} />
               <Route path="meeting-rooms/update/:id" element={<Dashboard cmp={<UpdateMeetingRoom />} />} />
               <Route path="reservations" element={<Dashboard cmp={<PendingReservations />} />} />
+              <Route path="archive" element={<Dashboard cmp={<Archive />} />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -1,4 +1,4 @@
-import { AppstoreOutlined, BarChartOutlined, CalendarOutlined, ContainerOutlined, ControlOutlined } from "@ant-design/icons"
+import { AppstoreOutlined, BarChartOutlined, CalendarOutlined, ContainerOutlined, ControlOutlined, FileSyncOutlined } from "@ant-design/icons"
 import { Layout, Menu, theme } from "antd"
 import { useLocation, useNavigate } from "react-router-dom"
 import PropTypes from "prop-types"
@@ -48,6 +48,12 @@ const items = [
     key: "5",
     to: "/dashboard/categories",
     icon: <ControlOutlined />
+  },
+  {
+    label: "Archive",
+    key: "6",
+    to: "/dashboard/archive",
+    icon: <FileSyncOutlined />
   }
 ]
 const Dashboard = ({ cmp }) => {
