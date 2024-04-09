@@ -100,7 +100,6 @@ const RoomDetails = () => {
   }
 
   useEffect(() => {
-    setLoading(true)
     fetchMeetingRoom()
     fetchReservedDates()
   }, [])
@@ -115,6 +114,7 @@ const RoomDetails = () => {
         values.meeting_rooms = params.id
         values.users = userId
         values.reservation_range = values.reservation_range.map((date) => date.$d)
+        values.additional_info = values.additional_info || ""
         await axios
           .post("/reservations", values)
           .then((res) => {
@@ -385,7 +385,7 @@ const RoomDetails = () => {
                           </Form.Item>
                         </Col>
                         <Col span={9}>
-                          <Form.Item ame="additional_info" label="Additional Information" colon={false}>
+                          <Form.Item name="additional_info" label="Additional Information" colon={false}>
                             <TextArea rows={1} />
                           </Form.Item>
                         </Col>

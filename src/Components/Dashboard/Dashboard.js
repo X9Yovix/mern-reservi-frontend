@@ -63,6 +63,8 @@ const Dashboard = ({ cmp }) => {
     const activeItem = findActiveItem(items, location.pathname)
     if (activeItem) {
       setCurrent(activeItem.key)
+    } else if (location.pathname.includes("/dashboard/meeting-rooms/update")) {
+      setCurrent("3-2")
     }
   }, [location.pathname])
 

@@ -22,6 +22,7 @@ import {
 import TextArea from "antd/es/input/TextArea"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import axios from "../../../../axios"
+import { useParams } from "react-router-dom"
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -31,29 +32,90 @@ const getBase64 = (file) =>
     reader.onerror = (error) => reject(error)
   })
 
-const AddMeetingRoom = () => {
+const UpdateMeetingRoom = () => {
   const [form] = Form.useForm()
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState("")
   const [previewTitle, setPreviewTitle] = useState("")
   const [fileList, setFileList] = useState([])
+  const [removedImages, setRemovedImages] = useState([])
   const [materials, setMaterials] = useState([])
   const [selectedMaterials, setSelectedMaterials] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
 
   const [messageApi, contextHolder] = message.useMessage()
+  const params = useParams()
 
   const { Content } = Layout
   const { Title } = Typography
 
-  const fetchMaterials = async () => {
+  const fetchMeetingRoom = async () => {
+    try {
+      setLoading(true)
+      await axios.get(`/meeting_rooms/${params.id}`).then((res) => {
+        form.setFieldsValue({
+          _id: res.data.meeting_room._id,
+          name: res.data.meeting_room.name,
+          description: res.data.meeting_room.description,
+          capacity: res.data.meeting_room.capacity,
+          length: res.data.meeting_room.length,
+          width: res.data.meeting_room.width,
+          height: res.data.meeting_room.height,
+          categories: res.data.categories.map((category) => category._id),
+          materials: res.data.materials.map((material) => {
+            const existingMaterial = res.data.meeting_room.materials.find((roomMaterial) => roomMaterial._id === material._id)
+            return {
+              name: material.name,
+              quantity: existingMaterial ? existingMaterial.reservedQuantity : 0
+            }
+          })
+        })
+
+        const materialIds = res.data.materials.map((material) => material._id)
+        fetchMaterials(materialIds)
+
+        setSelectedMaterials(
+          res.data.materials.map((material, index) => ({
+            _id: material._id,
+            name: material.name,
+            availability: material.availability,
+            availableQuantity: material.availableQuantity,
+            totalQuantity: material.totalQuantity,
+            __v: material.__v,
+            fieldKey: index
+          }))
+        )
+
+        setFileList(
+          res.data.meeting_room.images.map((image) => ({
+            uid: image._id,
+            name: image.split("\\").pop().split("-").slice(1).join("-"),
+            status: "done",
+            url: process.env.REACT_APP_BACKEND_STATIC_URL + image,
+            uploaded: "backend"
+          }))
+        )
+      })
+    } catch (error) {
+      console.error("Error occurred while fetching meeting room details:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchMaterials = async (materialsRoomId) => {
     try {
       setLoading(true)
       await axios
         .get("/materials")
         .then((res) => {
-          setMaterials(res.data.materials.filter((material) => material.availableQuantity > 0 && material.availability === true))
+          //setMaterials(res.data.materials.filter((material) => material.availableQuantity > 0 && material.availability === true))
+          setMaterials(
+            res.data.materials.filter(
+              (material) => (material.availableQuantity > 0 && material.availability === true) || materialsRoomId.includes(material._id)
+            )
+          )
         })
         .catch((err) => {
           console.log(err)
@@ -64,6 +126,7 @@ const AddMeetingRoom = () => {
       setLoading(false)
     }
   }
+
   const fetchCategories = async () => {
     try {
       setLoading(true)
@@ -91,7 +154,8 @@ const AddMeetingRoom = () => {
   }
 
   useEffect(() => {
-    fetchMaterials()
+    fetchMeetingRoom()
+    //fetchMaterials()
     fetchCategories()
   }, [])
 
@@ -129,7 +193,18 @@ const AddMeetingRoom = () => {
     setPreviewOpen(true)
     setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf("/") + 1))
   }
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList)
+
+  const handleChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList)
+  }
+
+  const handleRemove = (file) => {
+    if (file.uploaded == "backend") {
+      console.log("pushing")
+      setRemovedImages((prev) => [...prev, file.url])
+    }
+  }
+
   const uploadButton = (
     <button
       style={{
@@ -153,7 +228,7 @@ const AddMeetingRoom = () => {
     try {
       const formData = new FormData()
       formData.append("name", values.name)
-      formData.append("description", values.description || "")
+      formData.append("description", values.description)
       formData.append("capacity", values.capacity)
       formData.append("length", values.length)
       formData.append("width", values.width)
@@ -178,12 +253,16 @@ const AddMeetingRoom = () => {
       formData.append("materials", JSON.stringify(materialsData))
 
       fileList.map((file) => {
-        formData.append("images", file.originFileObj)
+        if (file.uploaded !== "backend") {
+          formData.append("images", file.originFileObj)
+        }
       })
+
+      formData.append("removed_images", JSON.stringify(removedImages))
 
       setLoading(true)
       await axios
-        .post("/meeting_rooms", formData, {
+        .put(`/meeting_rooms/${params.id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
@@ -193,6 +272,9 @@ const AddMeetingRoom = () => {
           form.resetFields()
           setFileList([])
           setSelectedMaterials([])
+
+          fetchMeetingRoom()
+          fetchCategories()
         })
         .catch((err) => {
           console.log(err)
@@ -219,7 +301,7 @@ const AddMeetingRoom = () => {
         <Row>
           <Col span={12} style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             <Title level={4} style={{ margin: 0 }}>
-              Add Meeting room
+              Update: {form.getFieldValue("name")}
             </Title>
           </Col>
         </Row>
@@ -451,6 +533,7 @@ const AddMeetingRoom = () => {
                   fileList={fileList}
                   onPreview={handlePreview}
                   onChange={handleChange}
+                  onRemove={handleRemove}
                   beforeUpload={() => false}
                   accept="image/*"
                 >
@@ -469,7 +552,7 @@ const AddMeetingRoom = () => {
             </Row>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Add
+                Update
               </Button>
             </Form.Item>
           </Form>
@@ -479,11 +562,11 @@ const AddMeetingRoom = () => {
   )
 }
 
-AddMeetingRoom.propTypes = {
+UpdateMeetingRoom.propTypes = {
   label: PropTypes.string,
   value: PropTypes.string,
   closable: PropTypes.bool,
   onClose: PropTypes.func,
   color: PropTypes.string
 }
-export default AddMeetingRoom
+export default UpdateMeetingRoom

@@ -261,7 +261,7 @@ const Reservations = () => {
       reservation_range: [updatedItem.start_date, updatedItem.end_date],
       additional_info: updatedItem.additional_info
     })
-    console.log(updatedItem)
+    //console.log(updatedItem)
     setEditReservation(updatedItem)
     setEditModalVisible(true)
   }

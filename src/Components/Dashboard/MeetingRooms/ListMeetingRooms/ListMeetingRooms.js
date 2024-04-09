@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Button, Row, Col, Divider, Spin, Layout, Table, Space, Typography, Pagination, Modal, Switch, message, Carousel } from "antd"
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons"
 import axios from "../../../../axios"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const ListMeetingRooms = () => {
   const [meetingRooms, setMeetingRooms] = useState([])
@@ -12,6 +12,7 @@ const ListMeetingRooms = () => {
   const [loading, setLoading] = useState(false)
 
   const [messageApi, contextHolder] = message.useMessage()
+  const navigate = useNavigate()
 
   const { Content } = Layout
   const { Title } = Typography
@@ -99,7 +100,7 @@ const ListMeetingRooms = () => {
       key: "action",
       render: (_, item) => (
         <Space size="middle">
-          <Button icon={<EditOutlined />} onClick={() => console.log(item)}>
+          <Button icon={<EditOutlined />} onClick={() => handleUpdate(item._id)}>
             Update
           </Button>
           <Button className="decline-btn" icon={<DeleteOutlined />} onClick={() => handleDelete(item._id)}>
@@ -167,6 +168,10 @@ const ListMeetingRooms = () => {
     }
   }
 
+  //update
+  const handleUpdate = (id) => {
+    navigate(`/dashboard/meeting-rooms/update/${id}`)
+  }
   //Delete section
   const showConfirmModal = (title, content, onOk) => {
     Modal.confirm({

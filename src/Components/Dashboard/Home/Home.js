@@ -23,6 +23,7 @@ const Home = () => {
   const [meetingRooms, setMeetingRooms] = useState([])
   const [reservations, setReservations] = useState([])
   const [categories, setCategories] = useState([])
+  const [countUsers, setCountUsers] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
 
   ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, ...registerables)
@@ -43,6 +44,24 @@ const Home = () => {
         })
     } catch (error) {
       console.error("Error fetching categories:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true)
+      await axios
+        .get("/users/count")
+        .then((res) => {
+          setCountUsers(res.data.count_users)
+        })
+        .catch((err) => {
+          console.error("Error fetching nbr of users:", err)
+        })
+    } catch (error) {
+      console.error("Error fetching nbr of users:", error)
     } finally {
       setLoading(false)
     }
@@ -153,6 +172,7 @@ const Home = () => {
     fetchMeetingRooms()
     fetchReservations()
     fetchCategories()
+    fetchUsers()
   }, [])
 
   const getMonthData = (value) => {
@@ -261,7 +281,7 @@ const Home = () => {
               {meetingRooms.length > 0 && (
                 <CardsChart
                   rooms={meetingRooms.length}
-                  users={meetingRooms.length}
+                  users={countUsers}
                   materials={materials.length}
                   categories={categories.length}
                   reservations={reservations.length}
