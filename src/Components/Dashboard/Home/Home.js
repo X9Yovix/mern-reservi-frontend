@@ -197,16 +197,48 @@ const Home = () => {
   const getListData = (value) => {
     const date = value.toDate()
     const month = date.getMonth() + 1
+    const day = date.getDate()
+
+    //normalize to midnight
+    const normalizedDate = new Date(date)
+    normalizedDate.setHours(0, 0, 0, 0)
 
     const reservedEvents = reservedDates.filter((reservation) => {
       const startDate = new Date(reservation.start_date)
       const endDate = new Date(reservation.end_date)
 
+
+      const normalizedStartDate = new Date(startDate)
+      normalizedStartDate.setHours(0, 0, 0, 0)
+      const normalizedEndDate = new Date(endDate)
+      normalizedEndDate.setHours(0, 0, 0, 0)
+
       const startMonth = startDate.getMonth() + 1
       const endMonth = endDate.getMonth() + 1
+      const startDay = startDate.getDate()
+      const endDay = endDate.getDate()
 
-      return month >= startMonth && month <= endMonth && date >= startDate && date <= endDate
+      return (
+        month >= startMonth &&
+        month <= endMonth &&
+        day >= startDay &&
+        day <= endDay &&
+        normalizedDate >= normalizedStartDate &&
+        normalizedDate <= normalizedEndDate
+      );
     })
+    /* const date = value.toDate()
+    const month = date.getMonth() + 1
+ 
+    const reservedEvents = reservedDates.filter((reservation) => {
+      const startDate = new Date(reservation.start_date)
+      const endDate = new Date(reservation.end_date)
+ 
+      const startMonth = startDate.getMonth() + 1
+      const endMonth = endDate.getMonth() + 1
+ 
+      return month >= startMonth && month <= endMonth && date >= startDate && date <= endDate
+    }) */
     let listData = []
     reservedEvents.forEach((reservation) => {
       let type = ""
@@ -312,7 +344,7 @@ const Home = () => {
                   showSearch
                   defaultValue={room}
                   onSelect={handleRoomChange}
-                  style={{ width: 150 }}
+                  style={{ width: 250 }}
                   filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
                   filterSort={(optionA, optionB) => (optionA?.label ?? "").toLowerCase().localeCompare((optionB?.label ?? "").toLowerCase())}
                   options={rooms}
