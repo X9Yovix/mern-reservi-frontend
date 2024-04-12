@@ -207,7 +207,6 @@ const Home = () => {
       const startDate = new Date(reservation.start_date)
       const endDate = new Date(reservation.end_date)
 
-
       const normalizedStartDate = new Date(startDate)
       normalizedStartDate.setHours(0, 0, 0, 0)
       const normalizedEndDate = new Date(endDate)
@@ -225,7 +224,7 @@ const Home = () => {
         day <= endDay &&
         normalizedDate >= normalizedStartDate &&
         normalizedDate <= normalizedEndDate
-      );
+      )
     })
     /* const date = value.toDate()
     const month = date.getMonth() + 1
