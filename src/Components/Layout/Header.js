@@ -79,6 +79,12 @@ const Header = ({ theme, toggleTheme }) => {
       icon: <LogoutOutlined />
     },
     {
+      label: <Link to="/">Home</Link>,
+      key: "home_page",
+      icon: <DashboardOutlined />,
+      to: "/"
+    },
+    {
       label: (
         <>
           {theme === "dark" ? (
@@ -118,11 +124,11 @@ const Header = ({ theme, toggleTheme }) => {
   let filteredItems = []
 
   if (!token) {
-    filteredItems = items.filter((item) => ["login", "register", "theme"].includes(item.key))
+    filteredItems = items.filter((item) => ["login", "register", "theme", "home_page"].includes(item.key))
   } else if (decodedToken && decodedToken.role === "admin") {
-    filteredItems = items.filter((item) => ["dashboard", "home", "reservations", "logout", "theme", "avatar"].includes(item.key))
+    filteredItems = items.filter((item) => ["dashboard", "home", "reservations", "logout", "theme", "avatar", "home_page"].includes(item.key))
   } else if (decodedToken && decodedToken.role === "user") {
-    filteredItems = items.filter((item) => ["home", "reservations", "logout", "theme", "avatar"].includes(item.key))
+    filteredItems = items.filter((item) => ["home", "reservations", "logout", "theme", "avatar", "home_page"].includes(item.key))
   }
 
   const onClick = (e) => {

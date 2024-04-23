@@ -21,6 +21,7 @@ import HomeDashboard from "./Components/Dashboard/Home/Home"
 import NotFound from "./Components/Shared/NotFound/NotFound"
 import UpdateMeetingRoom from "./Components/Dashboard/MeetingRooms/UpdateMeetingRoom/UpdateMeetingRoom"
 import Archive from "./Components/Dashboard/Archive/Archive"
+import HomePage from "./Components/Shared/Home/Home"
 import "./App.css"
 
 function App() {
@@ -47,7 +48,7 @@ function App() {
           <Header theme={themeMode} toggleTheme={toggleTheme} />
           <Routes>
             <Route path="/*" element={<NotFound />} />
-
+            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Signin />} />
             <Route path="/register" element={<Signup />} />
             <Route path="/reset-password" element={<ResetPassword />} />
