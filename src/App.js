@@ -26,7 +26,7 @@ import "./App.css"
 
 function App() {
   const { defaultAlgorithm, darkAlgorithm } = theme
-  const [themeMode, setThemeMode] = useState(localStorage.getItem("theme") || "dark")
+  const [themeMode, setThemeMode] = useState(localStorage.getItem("theme") || "light")
 
   const toggleTheme = () => {
     const newTheme = themeMode === "dark" ? "light" : "dark"
