@@ -25,19 +25,6 @@ const Header = ({ theme, toggleTheme }) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  useEffect(() => {
-    // exception for the route "/"
-    let activePath = location.pathname
-    if (activePath === "/") {
-      activePath = "/home"
-    }
-
-    const activeItem = items.find((item) => location.pathname.startsWith(item.to))
-    if (activeItem) {
-      setCurrent(activeItem.key)
-    }
-  }, [location.pathname, current])
-
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
@@ -125,6 +112,19 @@ const Header = ({ theme, toggleTheme }) => {
       key: "avatar"
     }
   ]
+
+  useEffect(() => {
+    let activePath = location.pathname
+    if (activePath === "/") {
+      activePath = "/home"
+      setCurrent("home")
+    } else {
+      const activeItem = items.find((item) => location.pathname.startsWith(item.to))
+      if (activeItem) {
+        setCurrent(activeItem.key)
+      }
+    }
+  }, [location.pathname])
 
   const token = localStorage.getItem("token")
   const decodedToken = token ? jwtDecode(token) : null

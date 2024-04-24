@@ -6,7 +6,6 @@ import { Footer } from "antd/es/layout/layout"
 import { useState } from "react"
 
 const videoMp4 = require("../../../assets/videos/V1.mp4")
-const videoWebm = require("../../../assets/videos/V2.webm")
 
 const Home = () => {
   const [themeMode] = useState(localStorage.getItem("theme") || "light")
@@ -25,7 +24,6 @@ const Home = () => {
     >
       <div className="video-container">
         <video autoPlay loop muted className="video-background">
-          <source src={videoWebm} type="video/webm" />
           <source src={videoMp4} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
