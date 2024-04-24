@@ -5,6 +5,7 @@ import { Avatar, Menu, Switch, Tooltip, message } from "antd"
 import {
   ContactsOutlined,
   DashboardOutlined,
+  GatewayOutlined,
   HomeOutlined,
   LoginOutlined,
   LogoutOutlined,
@@ -25,6 +26,12 @@ const Header = ({ theme, toggleTheme }) => {
   const location = useLocation()
 
   useEffect(() => {
+    // exception for the route "/"
+    let activePath = location.pathname
+    if (activePath === "/") {
+      activePath = "/home"
+    }
+
     const activeItem = items.find((item) => location.pathname.startsWith(item.to))
     if (activeItem) {
       setCurrent(activeItem.key)
@@ -48,8 +55,14 @@ const Header = ({ theme, toggleTheme }) => {
     {
       label: <Link to="/home">Home</Link>,
       key: "home",
-      icon: <HomeOutlined />,
+      icon: <GatewayOutlined />,
       to: "/home"
+    },
+    {
+      label: <Link to="/rooms">Rooms</Link>,
+      key: "rooms",
+      icon: <HomeOutlined />,
+      to: "/rooms"
     },
     {
       label: <Link to="/reservations">My Reservations</Link>,
@@ -77,12 +90,6 @@ const Header = ({ theme, toggleTheme }) => {
       ),
       key: "logout",
       icon: <LogoutOutlined />
-    },
-    {
-      label: <Link to="/">Home</Link>,
-      key: "home_page",
-      icon: <DashboardOutlined />,
-      to: "/"
     },
     {
       label: (
@@ -124,11 +131,11 @@ const Header = ({ theme, toggleTheme }) => {
   let filteredItems = []
 
   if (!token) {
-    filteredItems = items.filter((item) => ["login", "register", "theme", "home_page"].includes(item.key))
+    filteredItems = items.filter((item) => ["home", "login", "register", "theme"].includes(item.key))
   } else if (decodedToken && decodedToken.role === "admin") {
-    filteredItems = items.filter((item) => ["dashboard", "home", "reservations", "logout", "theme", "avatar", "home_page"].includes(item.key))
+    filteredItems = items.filter((item) => ["dashboard", "home", "rooms", "reservations", "logout", "theme", "avatar"].includes(item.key))
   } else if (decodedToken && decodedToken.role === "user") {
-    filteredItems = items.filter((item) => ["home", "reservations", "logout", "theme", "avatar", "home_page"].includes(item.key))
+    filteredItems = items.filter((item) => ["home", "rooms", "reservations", "logout", "theme", "avatar"].includes(item.key))
   }
 
   const onClick = (e) => {

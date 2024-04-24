@@ -13,6 +13,7 @@ import {
 } from "@ant-design/icons"
 import axios from "../../../axios"
 import "./Signup.css"
+const signUpImg = require("../../../assets/images/sign_up.png")
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -132,6 +133,9 @@ const Signup = () => {
         {contextHolder}
         <Content className="signup-content">
           <Row>
+            <Col span={24} style={{ textAlign: "center" }}>
+              <img src={signUpImg} alt="Sign Up" style={{ width: "300px", height: "300px" }} />
+            </Col>
             <Col span={24} style={{ textAlign: "center" }}>
               <Title level={4} style={{ fontWeight: "bold", margin: 0 }}>
                 Sign Up

@@ -4,6 +4,7 @@ import { Button, Form, Input, Layout, Row, Col, Spin, Typography, message, theme
 import { EyeInvisibleOutlined, EyeTwoTone, LoginOutlined, MailOutlined } from "@ant-design/icons"
 import axios from "../../../axios"
 import "./Signin.css"
+const signInImg = require("../../../assets/images/login.png")
 
 const Signin = () => {
   const [loading, setLoading] = useState(false)
@@ -64,6 +65,9 @@ const Signin = () => {
         {contextHolder}
         <Content className="signin-content">
           <Row>
+            <Col span={24} style={{ textAlign: "center" }}>
+              <img src={signInImg} alt="Sign In" style={{ width: "300px", height: "300px" }} />
+            </Col>
             <Col span={24} style={{ textAlign: "center" }}>
               <Title level={4} style={{ fontWeight: "bold", margin: 0 }}>
                 Sign In

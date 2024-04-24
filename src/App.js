@@ -48,6 +48,7 @@ function App() {
           <Header theme={themeMode} toggleTheme={toggleTheme} />
           <Routes>
             <Route path="/*" element={<NotFound />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Signin />} />
             <Route path="/register" element={<Signup />} />
@@ -55,7 +56,7 @@ function App() {
             <Route path="/reset-password/:token" element={<ResetPasswordVerify />} />
 
             <Route element={<PrivateComponent />}>
-              <Route path="/home" element={<Home />} />
+              <Route path="/rooms" element={<Home />} />
               <Route path="/rooms/details/:id" element={<RoomDetails />} />
               <Route path="/reservations" element={<Reservations />} />
             </Route>
