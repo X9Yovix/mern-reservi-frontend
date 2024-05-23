@@ -184,13 +184,13 @@ const PendingReservations = () => {
                 <List.Item.Meta
                   title={
                     <>
-                      {item.users.avatar != "" ? (
-                        <Avatar src={`${process.env.REACT_APP_BACKEND_STATIC_URL}${item.users.avatar}`} />
+                      {item.users?.avatar != "" ? (
+                        <Avatar src={`${process.env.REACT_APP_BACKEND_STATIC_URL}${item.users?.avatar}`} />
                       ) : (
                         <Avatar icon={<UserOutlined />} />
                       )}
                       <span style={{ opacity: "0.7", marginLeft: "10px" }}>
-                        {item.users && item.users.first_name} {item.users && item.users.last_name}
+                        {item.users && item.users?.first_name} {item.users && item.users?.last_name}
                       </span>
                     </>
                   }

@@ -301,7 +301,7 @@ const Reservations = () => {
   const handleCancelRequest = async (reservationId) => {
     try {
       setLoading(true)
-      await axios.put(`/reservations/state/decision/${reservationId}`, { state: 2 }).then((res) => {
+      await axios.put(`/reservations/state/decision/client/${reservationId}`, { state: 2 }).then((res) => {
         fetchUserReservations(currentPage)
         messageApi.success(res.data.message)
       })
